@@ -1,0 +1,406 @@
+{
+  "version": "1.0",
+  "description": "UII-Bench-50: 50 Skenario Evaluasi Institusional Regulasi Akademik UII",
+  "scenarios": [
+    {
+      "id": "S01",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal",
+      "query": "Berapa minimal SKS yang harus sudah lulus untuk bisa mendaftar seminar proposal skripsi di FTI UII?",
+      "expected_keywords": ["110 SKS", "lulus", "minimal"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S02",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal",
+      "query": "Saya punya satu nilai E di semester 2 dulu karena sakit. Apakah saya masih bisa mendaftar sempro?",
+      "expected_keywords": ["nilai E", "tidak boleh", "nol", "seluruh riwayat"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S03",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal",
+      "query": "IPK saya sekarang 1.99, kurang dari 2.00. Apakah saya boleh mendaftar seminar proposal skripsi?",
+      "expected_keywords": ["IPK", "2.00", "minimal", "tidak memenuhi"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S04",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal",
+      "query": "Saya belum mengambil mata kuliah Metodologi Penelitian sama sekali. Bisakah saya langsung daftar sempro?",
+      "expected_keywords": ["Metodologi Penelitian", "lulus", "prasyarat", "nilai C"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S05",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal",
+      "query": "Saya sudah lulus Metodologi Penelitian dengan nilai D. Apakah nilai D cukup untuk syarat sempro?",
+      "expected_keywords": ["nilai C", "minimal", "Metodologi Penelitian", "tidak memenuhi"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S06",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal",
+      "query": "Draf proposal saya sudah selesai tapi dosen pembimbing belum menandatanganinya. Apakah saya bisa daftar sempro?",
+      "expected_keywords": ["draf proposal", "disetujui", "ditandatangani", "dosen pembimbing"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S07",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal",
+      "query": "Saya sudah 115 SKS lulus, IPK 2.30, tidak ada nilai E, sudah lulus Metodologi Penelitian B, dan proposal sudah ditandatangani pembimbing. Apakah saya sudah memenuhi syarat sempro?",
+      "expected_keywords": ["110 SKS", "IPK", "nilai E", "Metodologi Penelitian", "draf proposal", "memenuhi"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S08",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal",
+      "query": "Apa saja dokumen yang harus saya siapkan untuk mendaftar seminar proposal skripsi?",
+      "expected_keywords": ["draf proposal", "persetujuan", "dosen pembimbing", "persyaratan"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S09",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal",
+      "query": "Apakah batas minimal IPK untuk sempro berbeda antara jurusan Informatika dan Teknik Industri di FTI?",
+      "expected_keywords": ["IPK", "2.00", "FTI", "minimal"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S10",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal",
+      "query": "Saya sudah 110 SKS lulus persis, IPK 2.05, tidak ada nilai E, lulus Metodologi Penelitian dengan C, dan proposal sudah ditandatangani. Apakah saya lolos syarat?",
+      "expected_keywords": ["110 SKS", "2.00", "nilai E", "nilai C", "proposal", "memenuhi"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S11",
+      "cluster": 2,
+      "cluster_name": "Beban SKS Semester & IPS",
+      "query": "IPS saya semester lalu 3.50. Berapa maksimal SKS yang boleh saya ambil semester ini?",
+      "expected_keywords": ["24 SKS", "IPS", "3.00", "maksimal"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    },
+    {
+      "id": "S12",
+      "cluster": 2,
+      "cluster_name": "Beban SKS Semester & IPS",
+      "query": "Saya mendapat IPS 2.75 di semester kemarin. Berapa batas SKS yang bisa saya ambil semester berikutnya?",
+      "expected_keywords": ["21 SKS", "IPS", "2.50", "2.99", "maksimal"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    },
+    {
+      "id": "S13",
+      "cluster": 2,
+      "cluster_name": "Beban SKS Semester & IPS",
+      "query": "IPS saya tepat 2.50. Berapa SKS maksimal yang diperbolehkan untuk semester depan?",
+      "expected_keywords": ["21 SKS", "IPS", "2.50", "batas"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    },
+    {
+      "id": "S14",
+      "cluster": 2,
+      "cluster_name": "Beban SKS Semester & IPS",
+      "query": "IPS saya 2.20. Berapa SKS yang boleh saya ambil semester depan?",
+      "expected_keywords": ["18 SKS", "IPS", "2.00", "2.49", "maksimal"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    },
+    {
+      "id": "S15",
+      "cluster": 2,
+      "cluster_name": "Beban SKS Semester & IPS",
+      "query": "IPS saya 1.80 semester ini. Berapa batas maksimal SKS yang bisa saya programkan?",
+      "expected_keywords": ["15 SKS", "IPS", "1.50", "1.99", "batas"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    },
+    {
+      "id": "S16",
+      "cluster": 2,
+      "cluster_name": "Beban SKS Semester & IPS",
+      "query": "IPS saya hanya 1.20 semester lalu. Berapa SKS maksimal yang boleh saya ambil?",
+      "expected_keywords": ["12 SKS", "IPS", "1.50", "kurang dari", "maksimal"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    },
+    {
+      "id": "S17",
+      "cluster": 2,
+      "cluster_name": "Beban SKS Semester & IPS",
+      "query": "IPS saya tepat 3.00. Apakah saya bisa mengambil 24 SKS semester depan?",
+      "expected_keywords": ["24 SKS", "IPS", "3.00", "boleh"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    },
+    {
+      "id": "S18",
+      "cluster": 2,
+      "cluster_name": "Beban SKS Semester & IPS",
+      "query": "Apakah ada aturan beban SKS khusus untuk mahasiswa yang sedang mengerjakan skripsi?",
+      "expected_keywords": ["SKS", "IPS", "beban", "semester"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    },
+    {
+      "id": "S19",
+      "cluster": 2,
+      "cluster_name": "Beban SKS Semester & IPS",
+      "query": "Saya mahasiswa baru semester pertama, belum punya IPS. Berapa SKS yang boleh saya ambil?",
+      "expected_keywords": ["SKS", "semester pertama", "IPS", "beban"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    },
+    {
+      "id": "S20",
+      "cluster": 2,
+      "cluster_name": "Beban SKS Semester & IPS",
+      "query": "IPS saya 2.49. Apakah saya bisa mengambil 20 SKS semester depan?",
+      "expected_keywords": ["18 SKS", "2.00", "2.49", "batas", "maksimal"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    },
+    {
+      "id": "S21",
+      "cluster": 3,
+      "cluster_name": "Masa Berlaku SK & Dosen Pembimbing",
+      "query": "Berapa lama masa berlaku SK dosen pembimbing skripsi di FTI UII setelah diterbitkan?",
+      "expected_keywords": ["6 bulan", "SK", "dekanat", "berlaku"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S22",
+      "cluster": 3,
+      "cluster_name": "Masa Berlaku SK & Dosen Pembimbing",
+      "query": "SK pembimbing saya terbit bulan Januari. Sampai kapan SK tersebut berlaku tanpa perpanjangan?",
+      "expected_keywords": ["6 bulan", "Juli", "berlaku", "tanggal terbit"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S23",
+      "cluster": 3,
+      "cluster_name": "Masa Berlaku SK & Dosen Pembimbing",
+      "query": "SK saya sudah habis masa berlakunya. Apakah bisa diperpanjang dan bagaimana caranya?",
+      "expected_keywords": ["perpanjangan", "1 kali", "logbook", "bimbingan"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S24",
+      "cluster": 3,
+      "cluster_name": "Masa Berlaku SK & Dosen Pembimbing",
+      "query": "Saya sudah pernah memperpanjang SK sekali sebelumnya. Apakah bisa diperpanjang lagi untuk kedua kalinya?",
+      "expected_keywords": ["maksimal 1 kali", "tidak bisa", "perpanjangan", "hanya sekali"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S25",
+      "cluster": 3,
+      "cluster_name": "Masa Berlaku SK & Dosen Pembimbing",
+      "query": "Dokumen apa yang dibutuhkan untuk mengajukan perpanjangan SK dosen pembimbing?",
+      "expected_keywords": ["logbook", "bimbingan", "perpanjangan", "syarat"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S26",
+      "cluster": 3,
+      "cluster_name": "Masa Berlaku SK & Dosen Pembimbing",
+      "query": "Berapa lama perpanjangan SK dosen pembimbing yang diizinkan setelah masa berlaku pertama habis?",
+      "expected_keywords": ["6 bulan", "perpanjangan", "berikutnya", "masa berlaku"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S27",
+      "cluster": 3,
+      "cluster_name": "Masa Berlaku SK & Dosen Pembimbing",
+      "query": "Apakah saya perlu logbook bimbingan untuk mengajukan perpanjangan SK pembimbing?",
+      "expected_keywords": ["logbook", "bimbingan", "wajib", "perpanjangan"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S28",
+      "cluster": 3,
+      "cluster_name": "Masa Berlaku SK & Dosen Pembimbing",
+      "query": "SK saya terbit 7 bulan yang lalu dan belum diperpanjang. Apakah SK saya masih berlaku?",
+      "expected_keywords": ["6 bulan", "sudah habis", "tidak berlaku", "perpanjangan"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S29",
+      "cluster": 3,
+      "cluster_name": "Masa Berlaku SK & Dosen Pembimbing",
+      "query": "Dosen pembimbing saya mengundurkan diri. Apakah saya harus meminta SK baru dan bagaimana prosedurnya?",
+      "expected_keywords": ["SK baru", "pembimbing", "pengganti", "prosedur"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S30",
+      "cluster": 3,
+      "cluster_name": "Masa Berlaku SK & Dosen Pembimbing",
+      "query": "Apakah perpanjangan SK pembimbing memerlukan persetujuan dari dosen pembimbing itu sendiri?",
+      "expected_keywords": ["perpanjangan", "persetujuan", "dosen pembimbing", "logbook"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S31",
+      "cluster": 4,
+      "cluster_name": "Batas Turnitin & Plagiarisme",
+      "query": "Berapa persen maksimal similarity index Turnitin yang diperbolehkan untuk skripsi di FTI UII?",
+      "expected_keywords": ["20%", "similarity index", "maksimal", "Turnitin"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S32",
+      "cluster": 4,
+      "cluster_name": "Batas Turnitin & Plagiarisme",
+      "query": "Hasil cek Turnitin skripsi saya menunjukkan similarity 21%. Apakah ini sudah melewati batas yang diizinkan?",
+      "expected_keywords": ["20%", "melewati batas", "21%", "revisi"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S33",
+      "cluster": 4,
+      "cluster_name": "Batas Turnitin & Plagiarisme",
+      "query": "Apakah daftar pustaka/bibliography turut dihitung dalam similarity index Turnitin untuk skripsi FTI?",
+      "expected_keywords": ["bibliography", "exclude", "tidak dihitung", "daftar pustaka"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S34",
+      "cluster": 4,
+      "cluster_name": "Batas Turnitin & Plagiarisme",
+      "query": "Apakah kutipan langsung (quotes) dihitung dalam similarity Turnitin untuk pengumpulan skripsi?",
+      "expected_keywords": ["quotes", "exclude", "tidak dihitung", "kutipan"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S35",
+      "cluster": 4,
+      "cluster_name": "Batas Turnitin & Plagiarisme",
+      "query": "Similarity Turnitin saya 19%. Apakah skripsi saya aman untuk dikumpulkan ke FTI?",
+      "expected_keywords": ["20%", "di bawah batas", "aman", "similarity"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S36",
+      "cluster": 4,
+      "cluster_name": "Batas Turnitin & Plagiarisme",
+      "query": "Bagaimana cara menghitung similarity Turnitin yang benar — apakah bibliography dan quotes dimasukkan atau dikecualikan?",
+      "expected_keywords": ["exclude bibliography", "exclude quotes", "Turnitin", "pengaturan"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S37",
+      "cluster": 4,
+      "cluster_name": "Batas Turnitin & Plagiarisme",
+      "query": "Saya ingin tahu apakah ada pengecualian khusus untuk similarity Turnitin bagi mahasiswa yang menulis dalam bahasa asing.",
+      "expected_keywords": ["20%", "similarity", "kebijakan", "Turnitin"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S38",
+      "cluster": 4,
+      "cluster_name": "Batas Turnitin & Plagiarisme",
+      "query": "Jika similarity Turnitin saya persis 20%, apakah skripsi saya lolos atau tidak?",
+      "expected_keywords": ["20%", "maksimal", "lolos", "batas"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S39",
+      "cluster": 4,
+      "cluster_name": "Batas Turnitin & Plagiarisme",
+      "query": "Saya mendapat similarity 25% karena banyak kutipan dari buku teks. Apakah ini bisa dimaklumi jika quotes di-exclude?",
+      "expected_keywords": ["exclude quotes", "similarity", "20%", "pengecualian"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S40",
+      "cluster": 4,
+      "cluster_name": "Batas Turnitin & Plagiarisme",
+      "query": "Di mana saya bisa cek Turnitin dan siapa yang berwenang menerbitkan laporan similarity untuk keperluan pengumpulan skripsi?",
+      "expected_keywords": ["Turnitin", "similarity", "laporan", "pengumpulan"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S41",
+      "cluster": 5,
+      "cluster_name": "Yudisium & Kelulusan Sarjana",
+      "query": "Berapa total SKS yang harus saya selesaikan untuk bisa mengikuti yudisium sarjana di FTI UII?",
+      "expected_keywords": ["144 SKS", "lulus", "yudisium", "total"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S42",
+      "cluster": 5,
+      "cluster_name": "Yudisium & Kelulusan Sarjana",
+      "query": "Berapa persen maksimal nilai D yang diperbolehkan dari total SKS untuk lulus sarjana di FTI?",
+      "expected_keywords": ["10%", "nilai D", "144 SKS", "14.4 SKS"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S43",
+      "cluster": 5,
+      "cluster_name": "Yudisium & Kelulusan Sarjana",
+      "query": "Saya masih punya satu nilai E di riwayat studi. Apakah saya bisa mengikuti yudisium?",
+      "expected_keywords": ["nilai E", "nol", "tidak boleh", "yudisium"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S44",
+      "cluster": 5,
+      "cluster_name": "Yudisium & Kelulusan Sarjana",
+      "query": "Apakah sertifikat TOEFL diperlukan untuk yudisium? Berapa skor minimal yang disyaratkan?",
+      "expected_keywords": ["TOEFL", "450", "CEPT", "CILACS UII", "sertifikat"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S45",
+      "cluster": 5,
+      "cluster_name": "Yudisium & Kelulusan Sarjana",
+      "query": "Apa itu sertifikasi hafalan Al-Qur'an DPPAI dan apakah wajib untuk yudisium sarjana?",
+      "expected_keywords": ["hafalan Al-Qur'an", "DPPAI UII", "wajib", "yudisium"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S46",
+      "cluster": 5,
+      "cluster_name": "Yudisium & Kelulusan Sarjana",
+      "query": "Berapa batas maksimal masa studi S1 di UII FTI dan apa konsekuensinya jika melewati batas tersebut?",
+      "expected_keywords": ["14 semester", "7 tahun", "batas studi", "drop out"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S47",
+      "cluster": 5,
+      "cluster_name": "Yudisium & Kelulusan Sarjana",
+      "query": "Pada evaluasi semester 4, berapa minimal SKS dan IPK yang harus saya capai agar tidak dikeluarkan?",
+      "expected_keywords": ["35 SKS", "semester 4", "IPK 2.00", "evaluasi"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S48",
+      "cluster": 5,
+      "cluster_name": "Yudisium & Kelulusan Sarjana",
+      "query": "Pada evaluasi semester 8, berapa minimal SKS yang harus sudah saya kumpulkan?",
+      "expected_keywords": ["80 SKS", "semester 8", "IPK 2.00", "evaluasi"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S49",
+      "cluster": 5,
+      "cluster_name": "Yudisium & Kelulusan Sarjana",
+      "query": "Saya punya 16 SKS nilai D dari total 144 SKS lulus. Apakah saya masih bisa yudisium?",
+      "expected_keywords": ["10%", "14.4 SKS", "nilai D", "melewati batas", "tidak lolos"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S50",
+      "cluster": 5,
+      "cluster_name": "Yudisium & Kelulusan Sarjana",
+      "query": "Saya sudah lulus 144 SKS dengan IPK 2.05, tidak ada nilai E, nilai D hanya 12 SKS, sudah lulus ujian skripsi, punya TOEFL 460 dari CILACS UII, dan sudah sertifikasi DPPAI. Apakah saya sudah memenuhi semua syarat yudisium?",
+      "expected_keywords": ["144 SKS", "IPK 2.00", "nilai E", "nilai D", "TOEFL", "DPPAI", "memenuhi"],
+      "expected_source_titles": ["Pedoman FTI"]
+    }
+  ]
+}

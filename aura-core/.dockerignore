@@ -1,0 +1,7 @@
+.git
+.env
+*.md
+bin/
+benchmark_results/
+coverage*.out
+testdata/

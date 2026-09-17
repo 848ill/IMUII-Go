@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AURA UII - Asistensi Regulasi Akademik & DPA Virtual (Pure Go)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .prose pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+    }
+    .prose code {
+      background: rgba(15, 23, 42, 0.08);
+      padding: 0.15rem 0.35rem;
+      border-radius: 0.25rem;
+      font-size: 0.875em;
+    }
+    .typing-cursor::after {
+      content: '▋';
+      display: inline-block;
+      vertical-align: baseline;
+      animation: blink 1s infinite;
+      color: #0284c7;
+      margin-left: 2px;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+
+  <!-- Navigation Header -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20 font-bold text-white text-lg">
+          A
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="font-bold text-lg text-white tracking-tight">AURA UII</h1>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+              Pure Go v2.0
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">Two-Stage RAG &bull; DPA Virtual &amp; FTI Compliance</p>
+        </div>
+      </div>
+
+      <!-- Action & Telemetry Controls -->
+      <div class="flex items-center space-x-3">
+        <button onclick="openRegulationModal()" class="flex items-center space-x-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-sky-400 hover:text-sky-300 px-3 py-1.5 rounded-xl border border-slate-700 transition">
+          <span>➕</span>
+          <span class="hidden sm:inline">Tambah Dokumen Regulasi</span>
+        </button>
+
+        <div class="hidden lg:flex items-center space-x-4 text-xs text-slate-400 border-l border-slate-800 pl-3">
+          <div class="flex items-center space-x-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Orchestrator: <strong class="text-slate-200">Golang Native</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Chat Content Area -->
+  <main class="flex-1 max-w-4xl w-full mx-auto p-4 flex flex-col justify-between">
+
+    <!-- Messages Container -->
+    <div id="messagesContainer" class="flex-1 overflow-y-auto space-y-6 pb-6 pt-2">
+      <!-- Welcome Card -->
+      <div class="bg-gradient-to-b from-slate-900 to-slate-900/60 border border-slate-800 rounded-2xl p-6 text-center shadow-xl">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-sky-500/10 text-sky-400 border border-sky-500/20 mb-4 text-2xl">
+          🎓
+        </div>
+        <h2 class="text-xl font-bold text-white mb-2">Asistensi Regulasi Akademik &amp; DPA Virtual</h2>
+        <p class="text-slate-400 text-sm max-w-xl mx-auto mb-6">
+          Didukung oleh arsitektur Two-Stage RAG murni Golang. Tanyakan klausul regulasi kampus, atau <strong>unggah berkas KRS/KHS Anda</strong> untuk evaluasi kelayakan studi &amp; rekomendasi strategi mata kuliah semester depan!
+        </p>
+
+        <!-- Quick Prompt Chips -->
+        <div class="flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto">
+          <button onclick="sendPrompt('Apa syarat mendaftar Seminar Proposal Skripsi di FTI UII?')" class="text-xs bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 px-3 py-2 rounded-xl border border-slate-700/50 transition">
+            📋 Syarat Sempro Skripsi FTI
+          </button>
+          <button onclick="sendPrompt('Berapa lama masa berlaku SK Dosen Pembimbing Skripsi?')" class="text-xs bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 px-3 py-2 rounded-xl border border-slate-700/50 transition">
+            ⏳ Masa Berlaku SK Pembimbing
+          </button>
+          <button onclick="sendPrompt('Berapa batas maksimal toleransi Turnitin di FTI UII?')" class="text-xs bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 px-3 py-2 rounded-xl border border-slate-700/50 transition">
+            🔍 Batas Toleransi Turnitin
+          </button>
+          <button onclick="sendPrompt('Berdasarkan data KHS saya, apakah saya sudah memenuhi syarat untuk daftar sempro dan apa rekomendasi matkul semester depan?')" class="text-xs bg-sky-950/80 hover:bg-sky-900/80 text-sky-300 px-3 py-2 rounded-xl border border-sky-800/60 transition">
+            💡 Konsultasi KHS &amp; Rekomendasi Studi
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Input Box -->
+    <div class="sticky bottom-0 bg-slate-950/80 backdrop-blur-xl pt-2 pb-2">
+      
+      <!-- Attached File Preview Badge -->
+      <div id="attachedFileCard" class="hidden mb-2 bg-sky-950/70 border border-sky-800/60 rounded-xl px-4 py-2 flex items-center justify-between shadow-md">
+        <div class="flex items-center space-x-2 text-xs text-sky-200 truncate">
+          <span class="text-lg">📄</span>
+          <div>
+            <strong id="attachedFileName" class="text-white block truncate">dokumen.pdf</strong>
+            <span id="attachedFileSummary" class="text-[11px] text-sky-400">Berkas akademik terlampir</span>
+          </div>
+        </div>
+        <button onclick="removeAttachedFile()" class="p-1 hover:bg-sky-900/80 rounded-lg text-slate-400 hover:text-white transition">
+          ✕
+        </button>
+      </div>
+
+      <!-- Chat Form -->
+      <form id="chatForm" onsubmit="handleSubmit(event)" class="relative flex items-center space-x-2">
+        <!-- Hidden File Input for Student Document -->
+        <input type="file" id="studentFileInput" class="hidden" accept=".pdf,.txt,.csv,.md,.png,.jpg" onchange="uploadStudentDoc(this.files[0])" />
+
+        <!-- Attachment Button -->
+        <button 
+          type="button" 
+          onclick="document.getElementById('studentFileInput').click()" 
+          title="Unggah berkas KRS, KHS, atau Transkrip Nilai Anda"
+          class="p-3.5 bg-slate-900 border border-slate-800 hover:border-slate-700 hover:text-sky-400 text-slate-400 rounded-2xl transition shadow-lg shrink-0 flex items-center justify-center"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+          </svg>
+        </button>
+
+        <!-- Text Input -->
+        <div class="relative flex-1">
+          <input 
+            id="queryInput"
+            type="text" 
+            placeholder="Tanyakan regulasi atau konsultasikan KRS/KHS Anda..."
+            class="w-full bg-slate-900 border border-slate-800 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-100 placeholder-slate-500 text-sm rounded-2xl pl-5 pr-14 py-4 shadow-lg outline-none transition"
+            autocomplete="off"
+          />
+          <button 
+            id="submitBtn"
+            type="submit"
+            class="absolute right-2.5 top-2.5 p-2 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white rounded-xl shadow-md transition disabled:opacity-40"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          </button>
+        </div>
+      </form>
+      <div class="text-[11px] text-slate-500 text-center mt-2 flex items-center justify-center space-x-2">
+        <span>Kontrak Anti-Halusinasi Aktif</span>
+        <span>&bull;</span>
+        <span>DPA Virtual Advisory</span>
+        <span>&bull;</span>
+        <span>UII-Bench-50</span>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Admin Regulation Upload Modal -->
+  <div id="regulationModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-white text-base">Tambah Dokumen Regulasi Kampus (PDF)</h3>
+        <button onclick="closeRegulationModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">✕</button>
+      </div>
+
+      <p class="text-xs text-slate-400">
+        Dokumen PDF yang diunggah akan otomatis disimpan ke <strong>Supabase Storage</strong>, dibersihkan via <strong>Jina Reader</strong>, dihitung vektornya via <strong>Cohere 1024-dim</strong>, dan disimpan permanen ke <strong>Pinecone</strong>.
+      </p>
+
+      <form id="regulationForm" onsubmit="handleRegulationUpload(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs text-slate-300 mb-1 font-medium">Judul Dokumen Resmi</label>
+          <input id="regTitle" type="text" required placeholder="Cth: Panduan Kurikulum 2024 Informatika FTI" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-300 mb-1 font-medium">Pilih Berkas Dokumen (PDF/TXT)</label>
+          <input id="regFile" type="file" required accept=".pdf,.txt,.md" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-sky-600 file:text-white hover:file:bg-sky-500 cursor-pointer" />
+        </div>
+
+        <div id="regProgress" class="hidden text-xs text-sky-400 flex items-center space-x-2">
+          <span class="animate-spin inline-block">⚙️</span>
+          <span id="regProgressText">Sedang mengunggah dan mengindeks ke Pinecone...</span>
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeRegulationModal()" class="px-4 py-2 rounded-xl text-xs text-slate-400 hover:bg-slate-800 transition">Batal</button>
+          <button id="regSubmitBtn" type="submit" class="px-4 py-2 rounded-xl text-xs bg-sky-600 hover:bg-sky-500 text-white font-medium transition shadow-md">Unggah &amp; Indeks Vektor</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const messagesContainer = document.getElementById('messagesContainer');
+    const queryInput = document.getElementById('queryInput');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Current attached student document
+    let currentAttachedDoc = null;
+
+    function sendPrompt(text) {
+      queryInput.value = text;
+      handleSubmit(new Event('submit'));
+    }
+
+    // Handle Student Document Upload (KRS / KHS)
+    async function uploadStudentDoc(file) {
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'student_doc');
+      formData.append('sessionId', 'session-' + Date.now());
+
+      const attachedFileCard = document.getElementById('attachedFileCard');
+      const attachedFileName = document.getElementById('attachedFileName');
+      const attachedFileSummary = document.getElementById('attachedFileSummary');
+
+      attachedFileName.innerText = 'Mengunggah & menganalisis ' + file.name + '...';
+      attachedFileSummary.innerText = 'Menjalankan ekstraksi berkas via Supabase...';
+      attachedFileCard.classList.remove('hidden');
+
+      try {
+        const resp = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await resp.json();
+
+        if (!resp.ok || !result.success) {
+          throw new Error(result.message || 'Gagal mengunggah berkas');
+        }
+
+        currentAttachedDoc = {
+          fileName: result.fileName,
+          fileUrl: result.fileUrl,
+          fileContent: result.extractedContent,
+          summary: result.summary
+        };
+
+        attachedFileName.innerText = result.fileName;
+        attachedFileSummary.innerText = result.summary || 'Berkas akademik terlampir';
+      } catch (err) {
+        alert('Gagal mengunggah berkas: ' + err.message);
+        removeAttachedFile();
+      }
+    }
+
+    function removeAttachedFile() {
+      currentAttachedDoc = null;
+      document.getElementById('attachedFileCard').classList.add('hidden');
+      document.getElementById('studentFileInput').value = '';
+    }
+
+    // Handle Admin Regulation Upload
+    function openRegulationModal() {
+      document.getElementById('regulationModal').classList.remove('hidden');
+    }
+
+    function closeRegulationModal() {
+      document.getElementById('regulationModal').classList.add('hidden');
+      document.getElementById('regProgress').classList.add('hidden');
+      document.getElementById('regSubmitBtn').disabled = false;
+      document.getElementById('regulationForm').reset();
+    }
+
+    async function handleRegulationUpload(e) {
+      e.preventDefault();
+      const title = document.getElementById('regTitle').value;
+      const fileInput = document.getElementById('regFile');
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('title', title);
+      formData.append('type', 'regulation');
+
+      const regProgress = document.getElementById('regProgress');
+      const regSubmitBtn = document.getElementById('regSubmitBtn');
+      regProgress.classList.remove('hidden');
+      regSubmitBtn.disabled = true;
+
+      try {
+        const resp = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const res = await resp.json();
+        if (!resp.ok || !res.success) {
+          throw new Error(res.message || 'Gagal mengunggah regulasi');
+        }
+        alert('✅ ' + res.message);
+        closeRegulationModal();
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        regSubmitBtn.disabled = false;
+      }
+    }
+
+    // Handle Chat Submit
+    async function handleSubmit(e) {
+      if (e) e.preventDefault();
+      const query = queryInput.value.trim();
+      if (!query) return;
+
+      // Disable input during request
+      queryInput.value = '';
+      queryInput.disabled = true;
+      submitBtn.disabled = true;
+
+      // 1. Render User Message Bubble
+      appendUserMessage(query, currentAttachedDoc ? currentAttachedDoc.fileName : null);
+
+      // 2. Prepare Assistant Bubble with Typing Stream
+      const assistantNode = createAssistantMessageNode();
+      messagesContainer.appendChild(assistantNode);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      const contentElem = assistantNode.querySelector('.msg-content');
+      const sourcesContainer = assistantNode.querySelector('.sources-container');
+      const metricsElem = assistantNode.querySelector('.metrics-container');
+
+      contentElem.classList.add('typing-cursor');
+
+      let fullAnswer = '';
+
+      const payload = {
+        query: query,
+        sessionId: 'session-' + Date.now()
+      };
+
+      if (currentAttachedDoc) {
+        payload.fileName = currentAttachedDoc.fileName;
+        payload.fileUrl = currentAttachedDoc.fileUrl;
+        payload.fileContent = currentAttachedDoc.fileContent;
+        payload.fileSummary = currentAttachedDoc.summary;
+      }
+
+      try {
+        const response = await fetch('/api/chat/stream', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error('HTTP error ' + response.status);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n\n');
+          buffer = lines.pop(); // Keep partial line in buffer
+
+          for (const chunk of lines) {
+            const trimmed = chunk.trim();
+            if (!trimmed) continue;
+
+            let eventType = 'message';
+            let dataStr = '';
+
+            const parts = trimmed.split('\n');
+            for (const p of parts) {
+              if (p.startsWith('event: ')) {
+                eventType = p.replace('event: ', '').trim();
+              } else if (p.startsWith('data: ')) {
+                dataStr = p.replace('data: ', '').trim();
+              }
+            }
+
+            if (eventType === 'token') {
+              try {
+                const tokenObj = JSON.parse(dataStr);
+                fullAnswer += tokenObj.token;
+                contentElem.innerHTML = marked.parse(fullAnswer);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+              } catch (err) {}
+            } else if (eventType === 'sources') {
+              try {
+                const sources = JSON.parse(dataStr);
+                renderSources(sourcesContainer, sources);
+              } catch (err) {}
+            } else if (eventType === 'metrics') {
+              try {
+                const metrics = JSON.parse(dataStr);
+                renderMetrics(metricsElem, metrics);
+              } catch (err) {}
+            } else if (eventType === 'error') {
+              try {
+                const errObj = JSON.parse(dataStr);
+                contentElem.innerHTML += `<div class="p-3 my-2 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs">⚠️ ${errObj.error}</div>`;
+              } catch (err) {}
+            }
+          }
+        }
+      } catch (err) {
+        contentElem.innerHTML = `<div class="p-3 my-2 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs">Gagal terhubung ke engine: ${err.message}</div>`;
+      } finally {
+        contentElem.classList.remove('typing-cursor');
+        queryInput.disabled = false;
+        submitBtn.disabled = false;
+        queryInput.focus();
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+    }
+
+    function appendUserMessage(text, attachedFile) {
+      const userDiv = document.createElement('div');
+      userDiv.className = 'flex justify-end';
+      let fileBadge = '';
+      if (attachedFile) {
+        fileBadge = `<div class="mb-1.5 flex items-center space-x-1 text-[11px] bg-sky-950/80 px-2 py-0.5 rounded-md border border-sky-800/60 w-fit text-sky-200">
+          <span>📎</span><span class="truncate">${escapeHtml(attachedFile)}</span>
+        </div>`;
+      }
+      userDiv.innerHTML = `
+        <div class="bg-gradient-to-r from-sky-600 to-indigo-600 text-white rounded-2xl rounded-tr-sm px-5 py-3.5 max-w-xl text-sm shadow-md">
+          ${fileBadge}
+          ${escapeHtml(text)}
+        </div>
+      `;
+      messagesContainer.appendChild(userDiv);
+    }
+
+    function createAssistantMessageNode() {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'flex items-start space-x-3 max-w-3xl';
+      wrapper.innerHTML = `
+        <div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-sky-400 shrink-0 mt-1">
+          A
+        </div>
+        <div class="flex-1 bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-sm p-5 shadow-lg space-y-3">
+          <!-- Sources Badge Container -->
+          <div class="sources-container flex flex-wrap gap-1.5"></div>
+          <!-- Text Body -->
+          <div class="msg-content prose prose-invert prose-sm max-w-none leading-relaxed text-slate-200">
+            <span class="text-slate-400 text-xs italic">Menghubungkan data mahasiswa dengan regulasi resmi UII...</span>
+          </div>
+          <!-- Latency Metrics Container -->
+          <div class="metrics-container pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500"></div>
+        </div>
+      `;
+      return wrapper;
+    }
+
+    function renderSources(container, sources) {
+      if (!sources || sources.length === 0) return;
+      container.innerHTML = sources.map(s => `
+        <span title="${escapeHtml(s.excerpt)}" class="cursor-pointer inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-sky-950/60 border border-sky-800/40 text-sky-300 text-[11px] hover:bg-sky-900/60 transition">
+          <span>📄</span>
+          <span class="font-medium">${escapeHtml(s.fileName || s.title)}</span>
+          <span class="text-sky-500/80">(${(s.score * 100).toFixed(0)}%)</span>
+        </span>
+      `).join('');
+    }
+
+    function renderMetrics(container, m) {
+      container.innerHTML = `
+        <div class="flex items-center space-x-2">
+          <span>ANN: <strong class="text-slate-400">${m.denseANNMs}ms</strong></span>
+          <span>&bull;</span>
+          <span>Rerank: <strong class="text-slate-400">${m.rerankMs}ms</strong></span>
+          <span>&bull;</span>
+          <span>Gen: <strong class="text-slate-400">${m.generationMs}ms</strong></span>
+        </div>
+        <div>Total: <strong class="text-emerald-400">${(m.totalMs / 1000).toFixed(2)}s</strong></div>
+      `;
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.innerText = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

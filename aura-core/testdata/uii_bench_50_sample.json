@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "description": "UII-Bench-50 Sample Dataset — 3 scenarios for unit testing",
+  "scenarios": [
+    {
+      "id": "S01",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal",
+      "query": "Berapa minimal SKS untuk mendaftar seminar proposal skripsi?",
+      "expected_keywords": ["110 SKS", "nilai E", "IPK 2.00"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S02",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal",
+      "query": "Apakah mahasiswa dengan nilai E bisa mendaftar sempro?",
+      "expected_keywords": ["tidak boleh", "nilai E", "nol"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "S03",
+      "cluster": 2,
+      "cluster_name": "Beban SKS Semester",
+      "query": "Berapa SKS maksimal yang bisa diambil jika IPS saya 3.20?",
+      "expected_keywords": ["24 SKS", "IPS >= 3.00"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    }
+  ]
+}
