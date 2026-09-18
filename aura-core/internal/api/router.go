@@ -18,20 +18,29 @@ func NewRouter(h *Handler, staticDir string) http.Handler {
 	mux.HandleFunc("POST /api/ingest", h.Ingest)
 	mux.HandleFunc("POST /api/upload", h.Upload)
 
-	// Web UI Static Files & Index
+	// Web UI Static Files & Pages
 	if staticDir == "" {
 		staticDir = "web"
 	}
 
-	// Serve UI
+	// Page routes
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
-		if path == "/" || path == "/index.html" || path == "/chat" {
-			indexPath := filepath.Join(staticDir, "templates", "index.html")
-			if _, err := os.Stat(indexPath); err == nil {
-				http.ServeFile(w, r, indexPath)
-				return
-			}
+
+		// Exact page routes
+		switch path {
+		case "/", "/index.html":
+			serveHTML(w, r, staticDir, "index.html")
+			return
+		case "/chat":
+			serveHTML(w, r, staticDir, "chat.html")
+			return
+		case "/login":
+			serveAuthPage(w, r, staticDir, "login.html")
+			return
+		case "/auth/callback":
+			serveAuthPage(w, r, staticDir, "callback.html")
+			return
 		}
 
 		// Check static files in web/static/
@@ -46,6 +55,36 @@ func NewRouter(h *Handler, staticDir string) http.Handler {
 
 	// Wrap with Global CORS & Logging Middleware
 	return withMiddleware(mux)
+}
+
+// serveHTML serves a plain HTML file from the templates directory.
+func serveHTML(w http.ResponseWriter, r *http.Request, staticDir, filename string) {
+	pagePath := filepath.Join(staticDir, "templates", filename)
+	if _, err := os.Stat(pagePath); err == nil {
+		http.ServeFile(w, r, pagePath)
+		return
+	}
+	http.NotFound(w, r)
+}
+
+// serveAuthPage serves an HTML file and injects Supabase config via string replacement.
+func serveAuthPage(w http.ResponseWriter, r *http.Request, staticDir, filename string) {
+	pagePath := filepath.Join(staticDir, "templates", filename)
+	data, err := os.ReadFile(pagePath)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	supabaseURL := os.Getenv("SUPABASE_URL")
+	supabaseKey := os.Getenv("SUPABASE_ANON_KEY")
+
+	html := string(data)
+	html = strings.Replace(html, `data-url=""`, `data-url="`+supabaseURL+`"`, 1)
+	html = strings.Replace(html, `data-key=""`, `data-key="`+supabaseKey+`"`, 1)
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Write([]byte(html))
 }
 
 func withMiddleware(next http.Handler) http.Handler {
