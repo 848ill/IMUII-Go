@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"aurauii/aura-core/internal/models"
@@ -17,6 +18,7 @@ type Handler struct {
 	ingestor       *rag.Ingestor
 	supabaseClient *supabase.Client
 	jinaClient     *jina.Client
+	adminKey       string
 }
 
 func NewHandler(
@@ -24,13 +26,32 @@ func NewHandler(
 	ingestor *rag.Ingestor,
 	supabaseClient *supabase.Client,
 	jinaClient *jina.Client,
+	adminKey string,
 ) *Handler {
 	return &Handler{
 		generator:      generator,
 		ingestor:       ingestor,
 		supabaseClient: supabaseClient,
 		jinaClient:     jinaClient,
+		adminKey:       adminKey,
 	}
+}
+
+func (h *Handler) verifyAdmin(r *http.Request) bool {
+	if h.adminKey == "" {
+		return true
+	}
+	if r.Header.Get("X-Admin-Key") == h.adminKey {
+		return true
+	}
+	authHeader := r.Header.Get("Authorization")
+	if strings.HasPrefix(authHeader, "Bearer ") && strings.TrimPrefix(authHeader, "Bearer ") == h.adminKey {
+		return true
+	}
+	if r.FormValue("adminKey") == h.adminKey {
+		return true
+	}
+	return false
 }
 
 // Health checks system status and operational telemetry
@@ -41,7 +62,7 @@ func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
 		"service":   "AURA Core Native Orchestrator",
 		"version":   "2.0.0 (Pure Go Native RAG)",
 		"timestamp": time.Now().Format(time.RFC3339),
-		"pipeline":  "Two-Stage Neural RAG (Cohere 1024-dim + Cohere Rerank v3.5 + DeepSeek-V3)",
+		"pipeline":  "AURA Sovereign Two-Stage RAG Engine",
 	})
 }
 
@@ -147,6 +168,11 @@ func (h *Handler) Ingest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !h.verifyAdmin(r) {
+		http.Error(w, "Unauthorized: Kunci admin diperlukan untuk memicu ingesti regulasi", http.StatusUnauthorized)
+		return
+	}
+
 	var req struct {
 		Document *models.Document `json:"document,omitempty"`
 		FromDB   bool             `json:"fromDB"`
@@ -176,6 +202,6 @@ func (h *Handler) Ingest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(map[string]string{
 		"status":  "success",
-		"message": "Document ingested successfully into Pinecone",
+		"message": "Document ingested successfully into knowledge base",
 	})
 }

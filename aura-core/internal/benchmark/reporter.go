@@ -49,6 +49,31 @@ func WriteCSV(results []ScenarioResult, w io.Writer) error {
 		}
 	}
 
+	// Legend / Keterangan Metrik RAG Triad & Latensi (14 columns matching CSV header)
+	emptyRow := make([]string, 14)
+	_ = writer.Write(emptyRow)
+
+	legendHeader := []string{
+		"# METRIK", "SINGKATAN", "NAMA LENGKAP", "DEFINISI & INDIKATOR", "RENTANG", "TARGET SKRIPSI",
+		"FORMULA / ALAT UKUR", "", "", "", "", "", "", "",
+	}
+	_ = writer.Write(legendHeader)
+
+	legends := [][]string{
+		{"# CR", "CR", "Context Relevance", "Mengukur apakah pasal/dokumen yang diretrieve oleh Pinecone & Reranker benar-benar relevan dengan pertanyaan mahasiswa.", "0.00 - 1.00", ">= 0.70", "LLM-as-Judge (DeepSeek)", "", "", "", "", "", "", ""},
+		{"# G", "G", "Groundedness (Anti-Halusinasi)", "Mengukur kesetiaan klaim jawaban terhadap dokumen rujukan resmi. 1.00 = 100% fakta bersumber dari regulasi tanpa halusinasi.", "0.00 - 1.00", ">= 0.85", "LLM-as-Judge (DeepSeek)", "", "", "", "", "", "", ""},
+		{"# AR", "AR", "Answer Relevance", "Mengukur seberapa tepat, tuntas, dan langsung jawaban sistem dalam menyelesaikan masalah pertanyaan mahasiswa.", "0.00 - 1.00", ">= 0.90", "LLM-as-Judge (DeepSeek)", "", "", "", "", "", "", ""},
+		{"# RTS", "RTS", "RAG Triad Score", "Skor komposit holistik RAG: rata-rata harmonik dari CR, G, dan AR.", "0.00 - 1.00", ">= 0.80", "3 / (1/CR + 1/G + 1/AR)", "", "", "", "", "", "", ""},
+		{"# EmbedMs", "EmbedMs", "Embedding Latency", "Waktu pembuatan vektor representasi teks query menggunakan Cohere Multilingual v3.", "Milidetik (ms)", "< 500 ms", "Cohere Embed API", "", "", "", "", "", "", ""},
+		{"# DenseMs", "DenseMs", "Dense ANN Retrieval", "Waktu pencarian kemiripan vektor Top-20 kandidat pada Pinecone Vector Space.", "Milidetik (ms)", "< 500 ms", "Pinecone Vector Index", "", "", "", "", "", "", ""},
+		{"# RerankMs", "RerankMs", "Neural Reranking", "Waktu penyortiran ulang akurasi tinggi Top-8 kandidat oleh Cohere Cross-Encoder.", "Milidetik (ms)", "< 500 ms", "Cohere Rerank v3.5", "", "", "", "", "", "", ""},
+		{"# GenMs", "GenMs", "Generation Latency", "Waktu inferensi dan penalaran sistemik anti-halusinasi oleh LLM DeepSeek.", "Milidetik (ms)", "< 5000 ms", "DeepSeek Chat API", "", "", "", "", "", "", ""},
+		{"# TotalMs", "TotalMs", "End-to-End Latency", "Total waktu eksekusi pipeline Pure Go dari query diterima hingga respons selesai.", "Milidetik (ms)", "< 6000 ms", "Wall-clock Time", "", "", "", "", "", "", ""},
+	}
+	for _, l := range legends {
+		_ = writer.Write(l)
+	}
+
 	return nil
 }
 
@@ -101,6 +126,22 @@ func WriteMarkdown(results []ScenarioResult, w io.Writer) error {
 		fmt.Fprintf(w, "| **Rata-rata Keseluruhan** | **%d** | **%.4f** | **%.4f** | **%.4f** | **%.4f** |\n",
 			overall.Count, overall.MeanCR, overall.MeanG, overall.MeanAR, overall.MeanRTS)
 	}
+
+	// Metrics Explanation / Legend
+	fmt.Fprintf(w, "\n## Penjelasan & Indikator Metrik RAG Triad\n\n")
+	fmt.Fprintf(w, "| Metrik | Singkatan | Nama Lengkap | Definisi & Indikator | Rentang Nilai | Target Ideal Skripsi |\n")
+	fmt.Fprintf(w, "|---|---|---|---|---|---|\n")
+	fmt.Fprintf(w, "| **CR** | CR | *Context Relevance* | Mengukur apakah pasal/dokumen yang diretrieve oleh Pinecone & Reranker benar-benar relevan dengan pertanyaan mahasiswa. | 0.00 – 1.00 (0–100%%) | $\\ge 0.70$ (70%%) |\n")
+	fmt.Fprintf(w, "| **G** | G | *Groundedness* (Anti-Halusinasi) | Mengukur kesetiaan klaim jawaban terhadap dokumen rujukan resmi. Nilai 1.00 berarti 100%% fakta bersumber dari regulasi tanpa halusinasi. | 0.00 – 1.00 (0–100%%) | $\\ge 0.85$ (85%%) |\n")
+	fmt.Fprintf(w, "| **AR** | AR | *Answer Relevance* | Mengukur seberapa tepat, tuntas, dan langsung jawaban sistem dalam menyelesaikan masalah pertanyaan mahasiswa tanpa bertele-tele. | 0.00 – 1.00 (0–100%%) | $\\ge 0.90$ (90%%) |\n")
+	fmt.Fprintf(w, "| **RTS** | RTS | *RAG Triad Score* | Skor komposit holistik RAG yang dihitung dari rata-rata harmonik: $\\frac{3}{\\frac{1}{\\text{CR}} + \\frac{1}{\\text{G}} + \\frac{1}{\\text{AR}}}$. | 0.00 – 1.00 (0–100%%) | $\\ge 0.80$ (80%%) |\n")
+
+	fmt.Fprintf(w, "\n### Indikator Latensi Pipeline (Pure Go Native Orchestrator)\n")
+	fmt.Fprintf(w, "- **EmbedMs**: Waktu embedding teks query menjadi vektor 1024-dimensi oleh Cohere Multilingual v3.\n")
+	fmt.Fprintf(w, "- **DenseMs**: Waktu pencarian kemiripan vektor ANN (*Approximate Nearest Neighbor*) Top-20 di Pinecone Vector Database.\n")
+	fmt.Fprintf(w, "- **RerankMs**: Waktu penyortiran ulang akurasi tinggi Top-8 kandidat oleh Cohere Cross-Encoder Neural Reranker v3.5.\n")
+	fmt.Fprintf(w, "- **GenMs**: Waktu inferensi teks dan penalaran anti-halusinasi oleh LLM DeepSeek.\n")
+	fmt.Fprintf(w, "- **TotalMs**: Total waktu eksekusi pipeline end-to-end dari query diterima hingga respons selesai (*wall-clock time*).\n")
 
 	return nil
 }

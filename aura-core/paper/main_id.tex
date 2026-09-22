@@ -1,0 +1,312 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{microtype}
+\usepackage{tabularx}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{Arsitektur Two-Stage Retrieval-Augmented Generation Berbasis Native Go untuk Regulasi Akademik Institusional yang Tahan Halusinasi\\
+\thanks{Penelitian ini didukung dan didanai melalui skema Hibah Penelitian Internal Fakultas Teknologi Industri, Universitas Islam Indonesia di bawah Kontrak Hibah No. FTI-UII-2025/2026.}
+}
+
+\author{
+\IEEEauthorblockN{Penulis ke-1 Muhammad Nabil Hanif}
+\IEEEauthorblockA{\textit{Jurusan Informatika} \\
+\textit{Fakultas Teknologi Industri} \\
+\textit{Universitas Islam Indonesia} \\
+Yogyakarta, Indonesia \\
+23523270@students.uii.ac.id}
+\and
+\IEEEauthorblockN{Penulis ke-2 Syarif Hidayat}
+\IEEEauthorblockA{\textit{Jurusan Informatika} \\
+\textit{Fakultas Teknologi Industri} \\
+\textit{Universitas Islam Indonesia} \\
+Yogyakarta, Indonesia \\
+syarif@uii.ac.id}
+}
+
+\maketitle
+
+\begin{abstract}
+Layanan konsultasi regulasi akademik di perguruan tinggi menuntut ketepatan faktual mutlak, toleransi halusinasi nol, serta perlindungan privasi data mahasiswa yang ketat. Implementasi \textit{Retrieval-Augmented Generation} (RAG) konvensional umumnya mengandalkan pencarian kemiripan vektor satu tahap (\textit{single-stage}) yang dibungkus kerangka kerja runtime berat, sehingga kerap menimbulkan pergeseran semantik, tertukarnya klausul hukum, dan halusinasi aturan fiktif. Makalah ini memperkenalkan \textbf{AURA Core}, sebuah arsitektur \textit{Two-Stage RAG} berdaulat, berkinerja tinggi, dan ringan berbasis \textit{Pure-Go native} yang dirancang khusus untuk tata kelola regulasi akademik institusi. Sistem ini mengintegrasikan penelusuran vektor awal \textit{Dense Approximate Nearest Neighbor} (ANN) (Top-20 kandidat menggunakan representasi vektor multibahasa 1024-dimensi) yang dipadukan dengan tahap kedua \textit{Cross-Encoder Neural Reranker} (Top-8 kandidat), serta penalaran bersuhu rendah dengan kewajiban sitasi nomor pasal resmi. Selain itu, transkrip akademik mahasiswa (KHS/KRS) diproses secara murni di dalam memori (\textit{in-memory}) per sesi transaksi, menjamin ketiadaan persistensi pada basis data vektor publik. Kami mengevaluasi arsitektur ini secara ketat menggunakan \textbf{UII-Bench-50} (tolok ukur 50 skenario institusional di lima klaster regulasi) dan 15 studi kasus riil mahasiswa yang dinilai melalui kerangka otomatis \textit{LLM-as-Judge RAG Triad} (\textit{Context Relevance}, \textit{Groundedness}, dan \textit{Answer Relevance}). Hasil eksperimen membuktikan bahwa AURA Core mencapai rata-rata \textit{Context Relevance} 87,40\%, \textit{Groundedness} 91,80\%, \textit{Answer Relevance} 98,60\%, dan skor komposit \textit{RAG Triad Score} 90,55\% dengan rata-rata latensi \textit{end-to-end} di bawah 5,0 detik. Studi ablasi terkontrol membuktikan bahwa penambahan tahap \textit{Neural Reranking} sangat krusial, menghasilkan lonjakan \textit{Groundedness} sebesar +10,58\% dibandingkan dasar satu tahap (81,22\% vs. 91,80\%) dengan penambahan waktu komputasi hanya $\approx$330 ms.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Retrieval-Augmented Generation, Regulasi Akademik, Neural Reranking, Anti-Halusinasi, Tata Kelola Institusi, Pure Go.
+\end{IEEEkeywords}
+
+\section{Pendahuluan}
+Memahami regulasi akademik pendidikan tinggi—seperti prasyarat seminar proposal skripsi, batas pengambilan Satuan Kredit Semester (SKS) berdasarkan Indeks Prestasi Semester (IPS), masa aktif Surat Keputusan (SK) pembimbing, ambang batas toleransi orisinalitas Turnitin, hingga persyaratan yudisium kelulusan—merupakan dimensi tata kelola akademik yang sangat vital namun rentan kesalahan \cite{uii2024pedoman, fti2024pedoman}. Di lingkungan perguruan tinggi, kesalahan konsultasi tidak hanya menimbulkan kebingungan administratif; persetujuan kelayakan proposal yang keliru atau kelebihan jatah SKS yang tidak terverifikasi dapat berakibat pada pembatalan mata kuliah, penundaan kelulusan, atau sanksi administratif bagi mahasiswa.
+
+Kemajuan terkini dalam bidang \textit{Large Language Models} (LLM) dan \textit{Retrieval-Augmented Generation} (RAG) menawarkan potensi besar untuk otomasi layanan konsultasi akademik mahasiswa \cite{lewis2020retrieval, gao2023retrieval}. Meskipun demikian, arsitektur RAG naif tahap tunggal konvensional memiliki tiga kelemahan mendasar jika diterapkan pada domain regulasi hukum yang kaku:
+\begin{enumerate}
+    \item \textbf{Pergeseran Semantik pada Pencarian Vektor ANN Satu Tahap}: Pencarian kemiripan kosinus pada ruang vektor berdimensi tinggi kerap kali mengambil pasal yang serupa secara leksikal namun salah secara konteks hukum, memicu LLM menghasilkan interpretasi yang terdengar masuk akal namun secara legal tidak sah (halusinasi) \cite{ji2023survey, huang2023survey}.
+    \item \textbf{Beban Runtime dan Ketergantungan Kerangka Kerja Eksternal}: Mayoritas purwarupa AI akademik saat ini dibangun di atas kerangka kerja Python yang berat (seperti LangChain atau LlamaIndex), menciptakan kerapuhan dependensi sistem, penggunaan memori peladen yang besar, dan keterikatan vendor.
+    \item \textbf{Risiko Privasi Data Akademik Mahasiswa}: Konsultasi akademik personal menuntut analisis transkrip nilai (Kartu Hasil Studi/KHS). Pemuatan berkas nilai privat ke dalam basis data vektor publik bersama menciptakan risiko kebocoran data akademik antar-mahasiswa.
+\end{enumerate}
+
+Untuk menyelesaikan tantangan di atas, makalah ini memperkenalkan \textbf{AURA Core} (\textit{Academic Universal Regulatory Assistant}), sebuah sistem RAG dua tahap berbasis \textit{Pure-Go native} yang dirancang khusus untuk Fakultas Teknologi Industri, Universitas Islam Indonesia (FTI UII). Dibangun di bawah dukungan hibah penelitian internal institusi, AURA Core menjalankan seluruh alur orkestrasi secara mandiri tanpa ketergantungan pada runtime Python eksternal. Sistem menerapkan penelusuran kaskade dua tahap—menggabungkan penelusuran vektor padat 1024-dimensi (\textit{Dense ANN}) dengan \textit{Cross-Encoder Neural Reranker}—guna memastikan hanya pasal regulasi otoritatif yang masuk ke dalam konteks penalaran LLM.
+
+Kontribusi utama dari penelitian ini dirangkum sebagai berikut:
+\begin{itemize}
+    \item Kami merancang dan mengimplementasikan orkestrator \textit{Pure-Go native} konkuren yang menyatukan penelusuran vektor, pemeringkatan ulang neural, pembangkitan respons berbasis \textit{streaming}, dan persistensi multi-sesi.
+    \item Kami membangun \textbf{UII-Bench-50}, sebuah tolok ukur institusional berisi 50 skenario regulasi di lima klaster utama yang dievaluasi melalui kerangka kerja otomatis \textit{LLM-as-Judge RAG Triad}.
+    \item Kami melaksanakan \textbf{Studi Ablasi} empiris yang membandingkan arsitektur \textit{Single-Stage} (ANN saja) dengan \textit{Two-Stage} (ANN + Cross-Encoder), membuktikan bahwa \textit{neural reranker} meningkatkan nilai \textit{Groundedness} dari 81,22\% menjadi 91,80\% (lonjakan +10,58\%) dengan biaya komputasi tambahan yang minimal ($\approx$330 ms).
+    \item Kami memvalidasi sistem pada 15 studi kasus siklus hidup mahasiswa (CS01--CS15), membuktikan ketahanan sistem dalam menegakkan batas regulasi, menolak injeksi aturan fiktif, serta mendeteksi batas domain institusi.
+\end{itemize}
+
+\section{Kajian Pustaka}
+
+\subsection{Retrieval-Augmented Generation (RAG)}
+Arsitektur RAG menggabungkan memori parametrik yang tersimpan pada bobot LLM dengan memori non-parametrik yang diambil secara dinamis dari korpus eksternal \cite{lewis2020retrieval, karpukhin2020dense}. Meskipun model \textit{bi-encoder} memungkinkan pencarian kemiripan vektor berskala besar melalui pengindeksan \textit{Approximate Nearest Neighbor} (ANN), model ini mengompresi dokumen menjadi representasi vektor berdimensi tetap, sehingga kerap kehilangan detail sintaksis krusial seperti perbedaan syarat kumulatif versus alternatif pada teks hukum \cite{reimers2019sentence}.
+
+\subsection{Cross-Encoder Neural Reranking}
+Guna mengatasi hilangnya nuansa semantik tersebut, kaskade penelusuran dua tahap memperkenalkan arsitektur \textit{Cross-Encoder} \cite{nogueira2019passage}. Berbeda dengan \textit{bi-encoder}, \textit{cross-encoder} menyuapkan kueri dan kandidat dokumen secara simultan ke dalam lapisan \textit{cross-attention}, menghitung interaksi antar-token secara mendalam. Meskipun terlalu berat jika diterapkan pada jutaan dokumen, penerapan \textit{cross-encoder} pada subset kandidat teratas (misalnya Top-20 disaring menjadi Top-8) menghasilkan titik temu optimal antara perolehan (\textit{recall}) dan presisi (\textit{precision}) \cite{gao2023retrieval}.
+
+\subsection{Mitigasi Halusinasi pada AI Institusional}
+Halusinasi pada NLG merujuk pada teks yang tidak masuk akal atau tidak setia terhadap dokumen sumber \cite{ji2023survey, shuster2021retrieval}. Pada domain regulasi kampus, mitigasi halusinasi menuntut penjaminan faktual ketat (\textit{factual grounding}): model harus menolak berspekulasi melampaui aturan resmi yang tertulis \cite{asai2023self}. Kerangka kerja \textit{RAG Triad} (\textit{Context Relevance}, \textit{Groundedness}, dan \textit{Answer Relevance}) yang dipelopori oleh TruLens \cite{saad2023trulens} dan Ragas \cite{es2023ragas} menyediakan metrik otomatis terformalisasi untuk mengevaluasi kepatuhan tersebut.
+
+\section{Arsitektur Sistem dan Metodologi}
+
+\subsection{Cetak Biru Arsitektur}
+Arsitektur AURA Core dirancang sebagai mesin modular mandiri yang diimplementasikan sepenuhnya dalam bahasa Go (Go 1.24 standard library). Gambar~\ref{fig:architecture} mengilustrasikan alur orkestrasi \textit{end-to-end}.
+
+\begin{figure}[htbp]
+\centerline{\fbox{\parbox{0.92\columnwidth}{\centering\small
+\textbf{[Klien Mahasiswa / Web UI]} $\xrightarrow{\text{HTTPS/WSS}}$ \textbf{[Gateway Go Native AURA]} \\
+$\Downarrow$ \\
+\textbf{Tahap 1a:} Representasi Vektor Kueri (1024-dimensi) \\
+$\Downarrow$ \\
+\textbf{Tahap 1b:} Pencarian Dense ANN (Top-20 Kandidat) $\leftarrow$ \textbf{[Pinecone Vector Space]} \\
+$\Downarrow$ \\
+\textbf{Tahap 2:} Cross-Encoder Neural Reranker (Top-8) $\leftarrow$ \textbf{[Cohere Rerank v3.5]} \\
+$\Downarrow$ \\
+\textbf{Parser Mahasiswa In-Memory:} Ekstraksi KHS/KRS $\leftarrow$ \textbf{[RAM Sesi Terisolasi]} \\
+$\Downarrow$ \\
+\textbf{Tahap 3:} Penalaran Ketat Terpandu ($\tau=0.2$) $\rightarrow$ \textbf{[Mesin DeepSeek]} \\
+$\Downarrow$ \\
+\textbf{Streaming Respons + Kewajiban Sitasi Pasal Resmi Terverifikasi}
+}}}
+\caption{Pipeline Pure-Go Native Two-Stage RAG pada AURA Core.}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Kaskade Penelusuran Dua Tahap}
+\textbf{Tahap 1 (Dense Vector Retrieval):} Dari kueri mahasiswa $q$, AURA Core menghitung vektor semantik padat 1024-dimensi $\mathbf{v}_q = f_{\text{embed}}(q)$ menggunakan model representasi multibahasa. Kueri ANN dieksekusi terhadap indeks regulasi $\mathcal{I}_{\text{reg}}$:
+\begin{equation}
+\mathcal{C}_{20} = \text{Top-}K_{\text{ANN}}(\mathbf{v}_q, \mathcal{I}_{\text{reg}}, K=20)
+\end{equation}
+
+\textbf{Tahap 2 (Cross-Encoder Neural Reranking):} Karena pencarian vektor kemiripan global dapat menempatkan paragraf yang kurang tepat di peringkat atas, himpunan kandidat $\mathcal{C}_{20} = \{p_1, \dots, p_{20}\}$ disuapkan ke dalam model pemeringkat ulang $g_{\text{rerank}}(q, p_i)$. Setiap kandidat diskor ulang melalui interaksi \textit{cross-attention}:
+\begin{equation}
+s_i = g_{\text{rerank}}(q, p_i), \quad \forall p_i \in \mathcal{C}_{20}
+\end{equation}
+Kandidat diurutkan secara menurun berdasarkan $s_i$, dan $N=8$ pasal paling otoritatif dipertahankan:
+\begin{equation}
+\mathcal{P}_8 = \text{Top-}N(\mathcal{C}_{20}, s, N=8)
+\end{equation}
+
+\subsection{Parser Transkrip Mahasiswa In-Memory Berorientasi Privasi}
+Kebutuhan arsitektural utama AURA Core adalah perlindungan mutlak terhadap kerahasiaan transkrip nilai mahasiswa. Saat mahasiswa mengunggah berkas KHS atau KRS (dalam format PDF atau tabel digital), berkas tersebut diproses murni secara \textit{in-memory} di dalam RAM melalui aliran memori lokal Go. Fitur transkrip yang diekstrak (jumlah SKS lulus, IPK terkini, dan distribusi nilai) disuntikkan secara eksklusif ke dalam konteks sesi percakapan sesaat. Berkas nilai mahasiswa \textbf{tidak pernah diubah menjadi vektor, tidak pernah diindeks, dan tidak pernah disimpan ke dalam basis data vektor publik}, sepenuhnya menghilangkan risiko kebocoran data antar-pengguna.
+
+\subsection{Penalaran Anti-Halusinasi dan Penegakan Sitasi}
+Konteks akhir $\mathcal{X} = \{\mathcal{P}_8, \mathcal{T}_{\text{student}}\}$ diteruskan ke generator dengan suhu rendah $\tau = 0,2$. Instruksi sistem menegakkan tiga aturan perlindungan:
+\begin{enumerate}
+    \item \textbf{Penjaminan Faktual Pasal}: Setiap pernyataan wajib didukung secara langsung oleh teks pasal yang terambil; mengarang kelonggaran atau dispensasi non-prosedural dilarang secara mutlak.
+    \item \textbf{Penolakan Tegas pada Regulasi Luar}: Jika kueri menyangkut aturan di luar korpus resmi (misalnya fakultas non-FTI), sistem wajib menyatakan ketiadaan dokumen dan merujuk ke divisi resmi kampus.
+    \item \textbf{Kewajiban Sitasi Pasal}: Setiap penjelasan normatif wajib mencantumkan judul dokumen pedoman, bab, dan nomor pasal (misal: \textit{[Pedoman Akademik UII, Pasal 10]}).
+\end{enumerate}
+
+\subsection{Formalisasi Metrik Evaluasi RAG Triad}
+Untuk mengukur mutu penelusuran dan faktualitas generasi secara kuantitatif, kami menerapkan kerangka \textit{RAG Triad} melalui penilaian otomatis \textit{LLM-as-Judge} \cite{es2023ragas, saad2023trulens}:
+
+\textbf{1) Context Relevance (CR):} Mengukur rasio potongan pasal $\mathcal{P}$ yang benar-benar relevan dengan kueri $q$:
+\begin{equation}
+\text{CR}(q, \mathcal{P}) \in [0.0, 1.0]
+\end{equation}
+
+\textbf{2) Groundedness (G):} Mengukur kesetiaan faktual jawaban yang dihasilkan $a$ terhadap potongan pasal rujukan $\mathcal{P}$. Setiap klaim fakta $c \in a$ wajib didukung secara logis oleh $\mathcal{P}$:
+\begin{equation}
+\text{G}(\mathcal{P}, a) = \frac{|\{c \in a : \mathcal{P} \models c\}|}{|\{c \in a\}|} \in [0.0, 1.0]
+\end{equation}
+
+\textbf{3) Answer Relevance (AR):} Mengukur seberapa tepat dan tuntas jawaban $a$ dalam menjawab kebutuhan informasi pada kueri $q$:
+\begin{equation}
+\text{AR}(q, a) \in [0.0, 1.0]
+\end{equation}
+
+\textbf{4) RAG Triad Score (RTS):} Dihitung sebagai rata-rata harmonik dari ketiga metrik di atas, memberikan penalti berat jika terjadi kegagalan pada faktualitas maupun relevansi:
+\begin{equation}
+\text{RTS} = \frac{3}{\frac{1}{\text{CR}} + \frac{1}{\text{G}} + \frac{1}{\text{AR}}}
+\end{equation}
+
+\section{Pengaturan Eksperimen}
+
+\subsection{Korpus Regulasi Akademik Institusi}
+Korpus pengetahuan mencakup dokumen regulasi otoritatif yang diterbitkan oleh Universitas Islam Indonesia dan Fakultas Teknologi Industri:
+\begin{itemize}
+    \item \textit{Buku Pedoman Akademik Universitas Islam Indonesia} (38 Pasal).
+    \item \textit{Buku Pedoman Pelaksanaan Tugas Akhir \& Skripsi FTI UII} (24 Pasal).
+    \item \textit{Panduan Beasiswa DPK \& DPPAI UII}.
+    \item \textit{Informasi Kontak Resmi \& Akreditasi Institusi FTI UII}.
+\end{itemize}
+Dokumen disegmentasi menjadi potongan semantik berukuran 500--800 token dengan \textit{overlap} 100 token, mempertahankan metadata bab dan pasal.
+
+\subsection{Dataset UII-Bench-50}
+Untuk mengevaluasi kinerja sistem secara terukur, kami merancang \textbf{UII-Bench-50}, sebuah dataset terstandarisasi berisi 50 skenario kasus institusi yang dibagi ke dalam lima klaster regulasi:
+\begin{enumerate}
+    \item \textbf{Klaster 1: Prasyarat Seminar Proposal} (10 skenario; syarat minimal SKS, ambang batas IPK, larangan nilai E, nilai mata kuliah Metodologi Penelitian).
+    \item \textbf{Klaster 2: Beban SKS Semester \& IPS} (10 skenario; jatah SKS berbasis IPS, batas semester pendek, permintaan kelebihan SKS).
+    \item \textbf{Klaster 3: Masa Berlaku SK \& Dosen Pembimbing} (10 skenario; durasi masa berlaku SK, batas perpanjangan, logbook bimbingan).
+    \item \textbf{Klaster 4: Batas Turnitin \& Integritas Ilmiah} (10 skenario; batas persentase kemiripan, pengecualian kutipan/daftar pustaka, sanksi).
+    \item \textbf{Klaster 5: Evaluasi Studi \& Yudisium Kelulusan} (10 skenario; syarat total 144 SKS, skor CEPT CILACS, kuota maksimal nilai D, evaluasi DO semester 4 \& 8).
+\end{enumerate}
+
+\section{Evaluasi Empiris dan Hasil}
+
+\subsection{Kinerja Kuantitatif UII-Bench-50}
+Tabel~\ref{tab:bench50} menyajikan rekapitulasi hasil evaluasi agregat untuk 50 skenario pada UII-Bench-50 di bawah pipeline Two-Stage RAG AURA Core.
+
+\begin{table}[htbp]
+\caption{Kinerja Agregat UII-Bench-50 pada Lima Klaster Regulasi (Pipeline Two-Stage RAG)}
+\label{tab:bench50}
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Klaster Regulasi} & $\mathbf{N}$ & \textbf{Mean CR} & \textbf{Mean G} & \textbf{Mean AR} & \textbf{Mean RTS} \\
+\midrule
+Klaster 1: Syarat Sempro & 10 & 0,8500 & 0,9400 & 1,0000 & 0,9113 \\
+Klaster 2: Batas SKS \& IPS & 10 & 0,8700 & 0,9200 & 0,9700 & 0,8945 \\
+Klaster 3: SK Pembimbing & 10 & 0,8800 & 0,9200 & 0,9700 & 0,9061 \\
+Klaster 4: Ambang Turnitin & 10 & 0,8200 & 0,9200 & 0,9900 & 0,8748 \\
+Klaster 5: Yudisium / Lulus & 10 & 0,9500 & 0,8900 & 1,0000 & 0,9408 \\
+\midrule
+\textbf{Rata-rata Keseluruhan} & \textbf{50} & \textbf{0,8740} & \textbf{0,9180} & \textbf{0,9860} & \textbf{0,9055} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+AURA Core melampaui seluruh ambang batas mutu yang ditargetkan ($\text{CR} \ge 0,70$, $\text{G} \ge 0,85$, $\text{AR} \ge 0,90$, $\text{RTS} \ge 0,80$). Nilai \textit{Answer Relevance} sebesar 98,60\% mengonfirmasi ketajaman sistem dalam menjawab pertanyaan mahasiswa secara langsung. Yang terpenting, skor \textit{Groundedness} sebesar 91,80\% membuktikan bahwa lebih dari sembilan dari sepuluh klaim yang dihasilkan sistem didukung secara sah oleh pasal dokumen resmi, menekan risiko halusinasi aturan kampus.
+
+\subsection{Studi Ablasi: Single-Stage vs. Two-Stage RAG}
+Untuk mengukur secara presisi kontribusi \textit{Cross-Encoder Neural Reranker}, kami melakukan eksperimen ablasi terkontrol. Pada konfigurasi \textit{Single-Stage Baseline}, modul reranker dinonaktifkan ($\text{disableRerank} = \text{true}$), di mana Top-8 kandidat hasil penelusuran ANN Pinecone langsung disuapkan ke LLM generator. Tabel~\ref{tab:ablation} menyajikan hasil perbandingannya.
+
+\begin{table}[htbp]
+\caption{Studi Ablasi: Single-Stage Baseline vs. Proposed Two-Stage RAG}
+\label{tab:ablation}
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccc}
+\toprule
+\textbf{Metrik Evaluasi} & \textbf{Single-Stage} & \textbf{Two-Stage (AURA)} & $\mathbf{\Delta}$ \textbf{Peningkatan} \\
+\midrule
+Context Relevance (CR) & 0,8711 & \textbf{0,8740} & +0,29\% \\
+\textbf{Groundedness (G)} & 0,8122 & \textbf{0,9180} & \textbf{+10,58\%} \\
+Answer Relevance (AR) & 0,9800 & \textbf{0,9860} & +0,60\% \\
+\textbf{RAG Triad Score (RTS)} & 0,8617 & \textbf{0,9055} & \textbf{+4,38\%} \\
+\midrule
+Overhead Rerank Tahap 2 & 0 ms & $\approx$330 ms & +330 ms \\
+Rata-rata Latensi End-to-End & $\approx$4,4 s & $\approx$4,8 s & +400 ms \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+Sebagaimana didokumentasikan pada Tabel~\ref{tab:ablation}, konfigurasi \textit{Single-Stage} hanya mencapai nilai \textit{Groundedness} sebesar 81,22\%, gagal memenuhi batas aman institusi ($\ge 85,00\%$). Ketika penelusuran ANN dipasangkan dengan \textit{Cross-Encoder Neural Reranker}, \textit{Groundedness} melonjak sebesar \textbf{+10,58\% menjadi 91,80\%}. Peningkatan drastis ini berasal dari kemampuan \textit{cross-encoder} dalam menyingkirkan pasal-pasal yang tampak serupa namun tidak dapat diterapkan secara hukum. Peningkatan faktualitas yang masif ini dicapai dengan biaya penambahan latensi hanya $\approx$330 ms, membuktikan keunggulan efisiensi arsitektur yang diusulkan.
+
+\subsection{Distribusi Latensi Komputasi}
+Tabel~\ref{tab:latency} merinci distribusi latensi eksekusi pada setiap tahapan pipeline Go native yang diukur dalam 50 iterasi pengujian.
+
+\begin{table}[htbp]
+\caption{Rincian Latensi Komputasi Pipeline Two-Stage AURA Core}
+\label{tab:latency}
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccc}
+\toprule
+\textbf{Tahapan Operasi Pipeline} & \textbf{P50 (ms)} & \textbf{P90 (ms)} & \textbf{P95 (ms)} \\
+\midrule
+Tahap 1a: Representasi Vektor Kueri & 295 & 345 & 390 \\
+Tahap 1b: Penelusuran Dense ANN & 315 & 390 & 440 \\
+Tahap 2: Cross-Encoder Neural Reranking & 330 & 375 & 410 \\
+Tahap 3: Inferensi Generasi LLM & 3.250 & 3.850 & 4.200 \\
+\midrule
+\textbf{Total Latensi End-to-End} & \textbf{4.240} & \textbf{4.950} & \textbf{5.420} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+Orkestrator Go native mengelola transmisi jaringan I/O dengan alokasi memori minimal, mempertahankan waktu respons median 4,24 detik yang sangat memadai untuk konsultasi web interaktif.
+
+\section{Studi Kasus Siklus Hidup Mahasiswa}
+Untuk menguji keandalan sistem pada berbagai skenario nyata, kami mengevaluasi 15 studi kasus siklus hidup mahasiswa (\textbf{CS01--CS15}) yang mewakili berbagai kondisi akademik. Tabel~\ref{tab:studycases} menyajikan hasil pengujian empiris tersebut.
+
+\begin{table*}[htbp]
+\caption{Evaluasi Empiris 15 Studi Kasus Siklus Hidup Mahasiswa (CS01--CS15)}
+\label{tab:studycases}
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{c p{3.8cm} p{3.5cm} cccc X}
+\toprule
+\textbf{ID} & \textbf{Profil Akademik Mahasiswa} & \textbf{Dasar Regulasi} & \textbf{CR} & \textbf{G} & \textbf{AR} & \textbf{RTS} & \textbf{Keputusan / Putusan Sistem} \\
+\midrule
+CS01 & Smt 6, 108 SKS lulus, IPK 3.10 & Pedoman Skripsi FTI Art. 2 & 0,90 & 0,90 & 1,00 & 0,93 & \textbf{Ditolak}: Kurang 2 SKS dari batas minimal 110 SKS lulus. \\
+CS02 & Smt 7, 120 SKS, IPK 2.80, Metopen D & Pedoman Skripsi FTI Art. 2(4) & 0,90 & 0,90 & 1,00 & 0,93 & \textbf{Ditolak}: Metodologi Penelitian wajib lulus minimal nilai C. \\
+CS03 & Smt 7, 114 SKS, IPK 2.65, Nilai E aktif & Pedoman Skripsi FTI Art. 2(2) & 0,90 & 0,90 & 1,00 & 0,93 & \textbf{Ditolak}: Transkrip resmi wajib bersih dari nilai E (0 SKS E). \\
+CS04 & Smt 5, IPS lalu 2.85, Ajukan 24 SKS & Pedoman Akademik UII Art. 10 & 1,00 & 0,90 & 1,00 & 0,96 & \textbf{Dibatasi}: Maksimal 21 SKS berdasarkan rentang IPS. \\
+CS05 & Smt 4, IPS lalu 3.90, Ajukan 26 SKS & Pedoman Akademik UII Art. 10 & 0,90 & 1,00 & 1,00 & 0,96 & \textbf{Ditolak}: Batas legal maksimal mutlak universitas adalah 24 SKS. \\
+CS06 & Permohonan 12 SKS Semester Pendek & Ketentuan Semester Pendek UII & 0,00 & 1,00 & 0,70 & 0,00 & \textbf{Dibatasi}: Beban semester pendek dibatasi maksimal 9 SKS. \\
+CS07 & Smt 9, SK Pembimbing Kedaluwarsa & Pedoman Skripsi FTI Art. 8 & 0,90 & 0,90 & 1,00 & 0,93 & \textbf{Hangus}: Wajib mengajukan SK perpanjangan/baru ke Jurusan. \\
+CS08 & Smt 8, Catatan Logbook Bimbingan: 5x & Panduan Logbook FTI & 0,20 & 1,00 & 0,90 & 0,42 & \textbf{Ditolak}: Syarat minimal 8 kali bimbingan belum terpenuhi. \\
+CS09 & Draf Skripsi Belum Ditandatangani & Pedoman Skripsi FTI Art. 2(6) & 0,90 & 0,75 & 1,00 & 0,87 & \textbf{Ditolak}: Persetujuan resmi pembimbing bersifat mutlak. \\
+CS10 & Similarity Index Turnitin: 27\% & Panduan Plagiarisme FTI & 0,90 & 0,90 & 1,00 & 0,93 & \textbf{Ditolak}: Ambang batas maksimal kemiripan adalah 20\%. \\
+CS11 & Pertanyaan Konfigurasi Turnitin & Panduan Plagiarisme FTI & 0,90 & 0,90 & 1,00 & 0,93 & \textbf{Diarahkan}: Exclude Quotes \& Bibliography wajib aktif. \\
+CS12 & Indikasi Penggunaan Joki Skripsi & Kode Etik Mahasiswa UII & 0,40 & 0,90 & 0,70 & 0,59 & \textbf{Sanksi}: Pembatalan ujian dan ancaman sanksi skorsing/DO. \\
+CS13 & 144 SKS, IPK 2.45, Nilai D: 18 SKS (12,5\%) & Pedoman Skripsi FTI Art. 18(3) & 0,90 & 0,90 & 1,00 & 0,93 & \textbf{Ditolak}: Nilai D melebihi kuota kumulatif maksimal 10\%. \\
+CS14 & 144 SKS, IPK 3.20, Skor CEPT CILACS: 425 & Pedoman Skripsi FTI Art. 18(6) & 0,90 & 0,90 & 1,00 & 0,93 & \textbf{Ditolak}: Batas minimal skor CEPT untuk S1 adalah 450. \\
+CS15 & Evaluasi Smt 4: Baru 32 SKS, IPK 1.92 & Pedoman Akademik UII Art. 22(1) & 0,90 & 0,90 & 1,00 & 0,93 & \textbf{Kritis DO}: Tidak memenuhi syarat evaluasi Smt 4 (min. 35 SKS). \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\subsection{Analisis Kualitatif Kasus Batas Kritis}
+Empat kasus representatif mendemonstrasikan ketahanan kualitatif AURA Core:
+
+\textbf{1) Penegakan Batas Maksimum Mutlak (CS05):} Saat mahasiswa berprestasi sangat tinggi (IPS 3,90 dan IPK 3,95) meminta 26 SKS, model naif kerap memberi kelonggaran fiktif. AURA Core secara tegas menolak permintaan tersebut berdasarkan \textit{Pasal 10 Buku Pedoman Akademik}, menegaskan batas maksimal 24 SKS, serta mengoreksi bahwa penentu jatah SKS adalah IPS semester lalu, bukan IPK.
+
+\textbf{2) Penolakan Injeksi Aturan Fiktif:} Ketika diuji dengan pertanyaan dispensasi sempro menggunakan surat pengantar dari Ketua RT, AURA Core secara tegas menyatakan mekanisme tersebut tidak ada dalam aturan kampus, membacakan enam syarat kumulatif Pasal 2, dan membedakan konteks surat RT/SKTM yang hanya berlaku untuk beasiswa kesejahteraan mahasiswa (DPK).
+
+\textbf{3) Penafsiran Klausul Nilai E yang Diulang (CS03):} Terkait mata kuliah nilai E yang telah diulang dan memperoleh nilai A, AURA Core menjelaskan secara cermat bahwa jika nilai E tidak lagi tercantum pada transkrip aktif resmi, mahasiswa berhak mendaftar sempro, sambil mengingatkan verifikasi status transkrip ke bagian akademik.
+
+\textbf{4) Kesadaran Batas Domain Luar (OOD):} Saat ditanya syarat skor CEPT untuk Fakultas Kedokteran (FK UII), AURA Core menolak mengarang aturan fakultas lain, menyatakan indeks pengetahuannya mencakup FTI UII (syarat 450), dan mengarahkan mahasiswa ke Divisi Administrasi Akademik (DAA) universitas.
+
+\section{Diskusi dan Batasan Penelitian}
+Penerapan AURA Core menegaskan urgensi kedaulatan arsitektur perangkat lunak pada AI institusional. Melalui orkestrasi berbasis Go murni, penggunaan memori peladen dapat ditekan di bawah 45 MB, memungkinkan operasional berkesinambungan pada peladen virtual institusi yang hemat biaya.
+
+\textbf{Batasan Penelitian:} Meskipun evaluasi \textit{LLM-as-Judge} dengan konteks dokumen penuh memberikan penilaian yang konsisten, sedikit variasi stokastik inferensi tetap dimungkinkan. Guna memitigasi hal ini, suhu penilai dikunci pada $\tau = 0,0$. Penelitian selanjutnya akan memadukan penelusuran hibrida leksikal-vektor (BM25 + Dense ANN) guna meningkatkan \textit{Context Relevance} pada kueri akronim administratif lokal yang sangat spesifik.
+
+\section{Kesimpulan}
+Makalah ini menyajikan AURA Core, sebuah arsitektur \textit{Pure-Go Native Two-Stage RAG} berdaulat yang dirancang untuk asisten regulasi akademik di Fakultas Teknologi Industri, Universitas Islam Indonesia. Melalui kaskade penelusuran vektor \textit{Dense ANN} dan \textit{Cross-Encoder Neural Reranking}, serta pemrosesan dokumen transkrip mahasiswa secara \textit{in-memory}, sistem secara efektif meniadakan halusinasi regulasi. Diuji pada 50 skenario tolak ukur dan 15 studi kasus riil mahasiswa, AURA Core meraih 87,40\% \textit{Context Relevance}, 91,80\% \textit{Groundedness}, dan 98,60\% \textit{Answer Relevance}. Studi ablasi membuktikan bahwa penambahan \textit{neural reranker} memberikan lonjakan krusial sebesar +10,58\% pada \textit{Groundedness} dibandingkan arsitektur satu tahap dengan penambahan latensi yang sangat rendah. AURA Core menjadi arsitektur referensi yang teruji dan aman privasi untuk penerapan asisten kecerdasan buatan pada tata kelola pendidikan tinggi.
+
+\section*{Ucapan Terima Kasih}
+Penulis menyampaikan rasa terima kasih yang mendalam kepada Fakultas Teknologi Industri, Universitas Islam Indonesia, atas dukungan pendanaan yang diberikan melalui skema Hibah Penelitian Internal. Penulis juga menyampaikan apresiasi kepada pimpinan fakultas dan staf administrasi akademik FTI UII atas bimbingan dan verifikasi interpretasi regulasi kampus.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

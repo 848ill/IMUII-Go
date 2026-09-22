@@ -22,6 +22,7 @@ func main() {
 	outputDir := flag.String("output", "benchmark_results", "Output directory for results")
 	clusterFilter := flag.Int("cluster", 0, "Filter by cluster number (0 = all)")
 	format := flag.String("format", "both", "Output format: csv, markdown, or both")
+	rerank := flag.Bool("rerank", true, "Enable Stage-2 Cross-Encoder reranking (set false for baseline Single-Stage)")
 	flag.Parse()
 
 	log.Println("╔══════════════════════════════════════════════════════════╗")
@@ -45,6 +46,12 @@ func main() {
 
 	// 3. Build pipeline
 	retriever := rag.NewRetriever(cohereClient, pineconeClient)
+	if !*rerank {
+		retriever.SetDisableRerank(true)
+		log.Println(">>> MODE: Baseline Single-Stage RAG (Tanpa Neural Reranker) <<<")
+	} else {
+		log.Println(">>> MODE: Proposed Two-Stage RAG (Dengan Neural Reranker) <<<")
+	}
 	generator := rag.NewGenerator(deepseekClient, retriever)
 	judge := benchmark.NewJudge(deepseekClient)
 	evaluator := benchmark.NewEvaluator(generator, judge)
@@ -67,11 +74,15 @@ func main() {
 		log.Fatalf("Failed to create output dir: %v", err)
 	}
 
+	modeTag := "two_stage"
+	if !*rerank {
+		modeTag = "single_stage_baseline"
+	}
 	timestamp := time.Now().Format("2006-01-02_150405")
 
 	// 6. Write CSV
 	if *format == "csv" || *format == "both" {
-		csvPath := filepath.Join(*outputDir, fmt.Sprintf("uii_bench_results_%s.csv", timestamp))
+		csvPath := filepath.Join(*outputDir, fmt.Sprintf("uii_bench_%s_%s.csv", modeTag, timestamp))
 		csvFile, err := os.Create(csvPath)
 		if err != nil {
 			log.Fatalf("Failed to create CSV file: %v", err)
@@ -86,7 +97,7 @@ func main() {
 
 	// 7. Write Markdown
 	if *format == "markdown" || *format == "both" {
-		mdPath := filepath.Join(*outputDir, fmt.Sprintf("uii_bench_results_%s.md", timestamp))
+		mdPath := filepath.Join(*outputDir, fmt.Sprintf("uii_bench_%s_%s.md", modeTag, timestamp))
 		mdFile, err := os.Create(mdPath)
 		if err != nil {
 			log.Fatalf("Failed to create Markdown file: %v", err)

@@ -64,6 +64,7 @@ type ChatRequest struct {
 type ChatResponse struct {
 	Answer    string           `json:"answer"`
 	Sources   []SourceCitation `json:"sources"`
+	Passages  []string         `json:"passages,omitempty"`
 	Metrics   TimingMetrics    `json:"metrics"`
 	SessionID string           `json:"sessionId"`
 	Timestamp time.Time        `json:"timestamp"`

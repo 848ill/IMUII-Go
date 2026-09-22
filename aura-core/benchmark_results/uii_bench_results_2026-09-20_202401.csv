@@ -1,0 +1,11 @@
+ID,Cluster,ClusterName,Query,CR,G,AR,RTS,EmbedMs,DenseMs,RerankMs,GenMs,TotalMs,Error
+S01,1,Prasyarat Seminar Proposal,Berapa minimal SKS yang harus sudah lulus untuk bisa mendaftar seminar proposal skripsi di FTI UII?,0.6000,0.0000,1.0000,0.0000,3317,5800,322,3098,12540,
+S02,1,Prasyarat Seminar Proposal,Saya punya satu nilai E di semester 2 dulu karena sakit. Apakah saya masih bisa mendaftar sempro?,0.6000,0.2000,1.0000,0.3913,302,306,334,3567,4511,
+S03,1,Prasyarat Seminar Proposal,"IPK saya sekarang 1.99, kurang dari 2.00. Apakah saya boleh mendaftar seminar proposal skripsi?",0.6000,0.3000,1.0000,0.5000,305,297,392,3270,4266,
+S04,1,Prasyarat Seminar Proposal,Saya belum mengambil mata kuliah Metodologi Penelitian sama sekali. Bisakah saya langsung daftar sempro?,0.6000,0.2000,1.0000,0.3913,298,304,341,3348,4293,
+S05,1,Prasyarat Seminar Proposal,Saya sudah lulus Metodologi Penelitian dengan nilai D. Apakah nilai D cukup untuk syarat sempro?,0.6000,0.2000,1.0000,0.3913,298,264,353,2967,3884,
+S06,1,Prasyarat Seminar Proposal,Draf proposal saya sudah selesai tapi dosen pembimbing belum menandatanganinya. Apakah saya bisa daftar sempro?,0.6000,0.3000,1.0000,0.5000,295,303,354,3483,4437,
+S07,1,Prasyarat Seminar Proposal,"Saya sudah 115 SKS lulus, IPK 2.30, tidak ada nilai E, sudah lulus Metodologi Penelitian B, dan proposal sudah ditandatangani pembimbing. Apakah saya sudah memenuhi syarat sempro?",0.4000,0.3000,1.0000,0.4390,324,314,373,3272,4284,
+S08,1,Prasyarat Seminar Proposal,Apa saja dokumen yang harus saya siapkan untuk mendaftar seminar proposal skripsi?,0.6000,0.1000,1.0000,0.2368,308,306,317,3455,4387,
+S09,1,Prasyarat Seminar Proposal,Apakah batas minimal IPK untuk sempro berbeda antara jurusan Informatika dan Teknik Industri di FTI?,0.6000,0.2000,1.0000,0.3913,305,299,360,2786,3752,
+S10,1,Prasyarat Seminar Proposal,"Saya sudah 110 SKS lulus persis, IPK 2.05, tidak ada nilai E, lulus Metodologi Penelitian dengan C, dan proposal sudah ditandatangani. Apakah saya lolos syarat?",0.2000,0.3000,1.0000,0.3214,297,266,335,3551,4453,

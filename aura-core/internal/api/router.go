@@ -33,13 +33,16 @@ func NewRouter(h *Handler, staticDir string) http.Handler {
 			serveHTML(w, r, staticDir, "index.html")
 			return
 		case "/chat":
-			serveHTML(w, r, staticDir, "chat.html")
+			serveAuthPage(w, r, staticDir, "chat.html")
 			return
 		case "/login":
 			serveAuthPage(w, r, staticDir, "login.html")
 			return
 		case "/auth/callback":
 			serveAuthPage(w, r, staticDir, "callback.html")
+			return
+		case "/faq":
+			serveHTML(w, r, staticDir, "faq.html")
 			return
 		}
 

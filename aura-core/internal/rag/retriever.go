@@ -16,6 +16,7 @@ type Retriever struct {
 	pineconeClient *pinecone.Client
 	denseTopK      int
 	rerankTopN     int
+	disableRerank  bool
 }
 
 func NewRetriever(cohereClient *cohere.Client, pineconeClient *pinecone.Client) *Retriever {
@@ -25,6 +26,11 @@ func NewRetriever(cohereClient *cohere.Client, pineconeClient *pinecone.Client) 
 		denseTopK:      20, // Stage-1 ANN
 		rerankTopN:     8,  // Stage-2 Cross-Encoder
 	}
+}
+
+// SetDisableRerank enables or disables Stage-2 Cross-Encoder reranking (for baseline comparison)
+func (r *Retriever) SetDisableRerank(disable bool) {
+	r.disableRerank = disable
 }
 
 type RetrievalResult struct {
@@ -59,6 +65,23 @@ func (r *Retriever) Retrieve(ctx context.Context, query string) (*RetrievalResul
 
 	if len(denseCandidates) == 0 {
 		return &RetrievalResult{Metrics: metrics}, nil
+	}
+
+	// Baseline Single-Stage Mode: Return top-8 ANN candidates directly without reranking
+	if r.disableRerank {
+		sort.Slice(denseCandidates, func(i, j int) bool {
+			return denseCandidates[i].Score > denseCandidates[j].Score
+		})
+		passages := denseCandidates
+		if len(passages) > r.rerankTopN {
+			passages = passages[:r.rerankTopN]
+		}
+		metrics.RerankMs = 0
+		return &RetrievalResult{
+			Passages: passages,
+			Sources:  extractSources(passages),
+			Metrics:  metrics,
+		}, nil
 	}
 
 	// Stage 2: Cross-Encoder Neural Reranking

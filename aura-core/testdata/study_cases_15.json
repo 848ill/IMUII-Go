@@ -1,0 +1,126 @@
+{
+  "version": "1.0",
+  "description": "UII-StudyCases-15: 15 Skenario Studi Kasus Riil Akademik Mahasiswa FTI UII untuk Evaluasi Hibah Penelitian & Skripsi",
+  "scenarios": [
+    {
+      "id": "CS01",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal Skripsi",
+      "query": "Saya mahasiswa Informatika FTI UII semester 6 dengan total SKS lulus 108 SKS dan IPK 3.10. Apakah saya sudah bisa mendaftar Seminar Proposal Skripsi?",
+      "expected_keywords": ["110 SKS", "lulus", "minimal", "kurang", "tidak memenuhi"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "CS02",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal Skripsi",
+      "query": "Total SKS lulus saya 120 SKS dengan IPK 2.80, tapi nilai mata kuliah Metodologi Penelitian saya adalah D. Apakah saya diizinkan mendaftar sempro?",
+      "expected_keywords": ["Metodologi Penelitian", "nilai C", "minimal", "tidak memenuhi", "mengulang"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "CS03",
+      "cluster": 1,
+      "cluster_name": "Prasyarat Seminar Proposal Skripsi",
+      "query": "Saya semester 7 dengan 114 SKS lulus dan IPK 2.65, namun masih ada satu nilai E pada mata kuliah pilihan. Bisakah saya mendaftar sempro?",
+      "expected_keywords": ["nilai E", "tidak boleh", "transkrip resmi", "tidak memenuhi"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "CS04",
+      "cluster": 2,
+      "cluster_name": "Beban SKS Semester & IPS",
+      "query": "Pada semester genap lalu IPS saya memperoleh 2.85. Berapa batas maksimal beban SKS yang berhak saya ambil pada semester ganjil ini?",
+      "expected_keywords": ["21 SKS", "IPS 2.50", "2.99", "maksimal"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    },
+    {
+      "id": "CS05",
+      "cluster": 2,
+      "cluster_name": "Beban SKS Semester & IPS",
+      "query": "IPS semester lalu saya 3.90. Bolehkah saya mengambil 26 SKS pada semester ini untuk mempercepat kelulusan?",
+      "expected_keywords": ["24 SKS", "maksimal", "tidak boleh", "26 SKS melampaui batas"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    },
+    {
+      "id": "CS06",
+      "cluster": 2,
+      "cluster_name": "Beban SKS Semester & IPS",
+      "query": "Berapa maksimal SKS yang boleh diambil mahasiswa pada Semester Antara (Semester Pendek) di UII?",
+      "expected_keywords": ["Semester Antara", "9 SKS", "maksimal"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    },
+    {
+      "id": "CS07",
+      "cluster": 3,
+      "cluster_name": "Masa Berlaku SK & Dosen Pembimbing",
+      "query": "SK Dosen Pembimbing Skripsi saya sudah terbit 2 semester yang lalu dan masa perpanjangan sudah lewat, tetapi skripsi saya belum selesai. Apa yang harus saya lakukan?",
+      "expected_keywords": ["SK baru", "kedaluwarsa", "perpanjangan", "Ketua Program Studi", "dosen pembimbing"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "CS08",
+      "cluster": 3,
+      "cluster_name": "Masa Berlaku SK & Dosen Pembimbing",
+      "query": "Berapa frekuensi minimal bimbingan dengan Dosen Pembimbing yang wajib dipenuhi mahasiswa sebelum diizinkan mendaftar Ujian Pendadaran?",
+      "expected_keywords": ["minimal 8 kali", "bimbingan", "log bimbingan", "dosen pembimbing"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "CS09",
+      "cluster": 3,
+      "cluster_name": "Masa Berlaku SK & Dosen Pembimbing",
+      "query": "Draf proposal skripsi saya sudah selesai tapi pembimbing belum menandatanganinya karena sedang dinas luar kota. Bolehkah saya tetap mendaftar sempro lebih dulu?",
+      "expected_keywords": ["persetujuan", "ditandatangani", "dosen pembimbing", "wajib", "tidak boleh"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "CS10",
+      "cluster": 4,
+      "cluster_name": "Batas Turnitin & Plagiarisme",
+      "query": "Hasil cek Turnitin naskah skripsi saya menunjukkan similarity index 27%. Apakah naskah ini bisa diajukan untuk pendaftaran pendadaran?",
+      "expected_keywords": ["20%", "maksimal", "tidak memenuhi", "revisi", "parafrase"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "CS11",
+      "cluster": 4,
+      "cluster_name": "Batas Turnitin & Plagiarisme",
+      "query": "Pengaturan apa saja yang harus diaktifkan saat melakukan pengecekan Turnitin naskah skripsi di FTI UII?",
+      "expected_keywords": ["Exclude Bibliography", "Exclude Quotes", "Turnitin", "20%"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "CS12",
+      "cluster": 4,
+      "cluster_name": "Batas Turnitin & Plagiarisme",
+      "query": "Apa sanksi akademik jika mahasiswa terbukti melakukan plagiarisme berat atau menggunakan jasa joki skripsi di UII?",
+      "expected_keywords": ["pembatalan", "sanksi", "skorsing", "kode etik", "Drop Out"],
+      "expected_source_titles": ["Pedoman FTI", "Pedoman Akademik UII"]
+    },
+    {
+      "id": "CS13",
+      "cluster": 5,
+      "cluster_name": "Yudisium & Evaluasi Batas Studi",
+      "query": "Saya sudah mengumpulkan 144 SKS lulus dengan IPK 2.45, tetapi terdapat 18 SKS nilai D (12.5% dari total). Apakah saya memenuhi syarat yudisium sarjana?",
+      "expected_keywords": ["10%", "maksimal nilai D", "tidak memenuhi", "144 SKS", "mengulang"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "CS14",
+      "cluster": 5,
+      "cluster_name": "Yudisium & Evaluasi Batas Studi",
+      "query": "Seluruh nilai skripsi dan SKS saya sudah lengkap 144 SKS, namun skor CEPT CILACS saya 425. Apakah saya bisa mendaftar yudisium?",
+      "expected_keywords": ["CEPT", "450", "minimal", "CILACS", "tidak memenuhi"],
+      "expected_source_titles": ["Pedoman FTI"]
+    },
+    {
+      "id": "CS15",
+      "cluster": 5,
+      "cluster_name": "Yudisium & Evaluasi Batas Studi",
+      "query": "Saya sekarang berada di akhir semester 4 dengan total 32 SKS lulus dan IPK 1.92. Apakah posisi akademik saya aman dari evaluasi Drop Out (DO)?",
+      "expected_keywords": ["evaluasi semester 4", "35 SKS", "IPK 2.00", "tidak memenuhi", "rawan DO", "peringatan"],
+      "expected_source_titles": ["Pedoman Akademik UII"]
+    }
+  ]
+}

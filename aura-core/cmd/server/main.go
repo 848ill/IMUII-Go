@@ -45,7 +45,7 @@ func main() {
 	generator := rag.NewGenerator(deepseekClient, retriever)
 
 	// Initialize API Router
-	handler := api.NewHandler(generator, ingestor, supabaseClient, jinaClient)
+	handler := api.NewHandler(generator, ingestor, supabaseClient, jinaClient, cfg.AdminAPIKey)
 	router := api.NewRouter(handler, "web")
 
 	addr := fmt.Sprintf(":%d", cfg.Port)

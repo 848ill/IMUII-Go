@@ -47,8 +47,8 @@ func LoadDataset(path string) (*Dataset, error) {
 		if s.Query == "" {
 			return nil, fmt.Errorf("scenario %s has empty query", s.ID)
 		}
-		if s.Cluster < 1 || s.Cluster > 5 {
-			return nil, fmt.Errorf("scenario %s has invalid cluster %d (must be 1-5)", s.ID, s.Cluster)
+		if s.Cluster < 1 || s.Cluster > 10 {
+			return nil, fmt.Errorf("scenario %s has invalid cluster %d (must be 1-10)", s.ID, s.Cluster)
 		}
 	}
 

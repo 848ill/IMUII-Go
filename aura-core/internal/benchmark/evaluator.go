@@ -83,12 +83,15 @@ func (e *Evaluator) RunSingle(ctx context.Context, scenario TestScenario) (*Scen
 		return nil, fmt.Errorf("RAG generation failed for %s: %w", scenario.ID, err)
 	}
 
-	// 2. Extract passage texts for the judge
-	passages := make([]string, len(resp.Sources))
-	for i, src := range resp.Sources {
-		passages[i] = src.Excerpt
+	// 2. Extract passage texts for the judge (prefer full passages over truncated excerpts)
+	passages := resp.Passages
+	if len(passages) == 0 {
+		for _, src := range resp.Sources {
+			if src.Excerpt != "" {
+				passages = append(passages, src.Excerpt)
+			}
+		}
 	}
-	// If sources have no excerpts, use a placeholder
 	if len(passages) == 0 {
 		passages = []string{"(no passages retrieved)"}
 	}

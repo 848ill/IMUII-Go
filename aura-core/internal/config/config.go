@@ -34,6 +34,9 @@ type Config struct {
 	// Supabase
 	SupabaseURL     string
 	SupabaseAnonKey string
+
+	// Admin Security
+	AdminAPIKey string
 }
 
 // Load reads .env if present and environment variables into Config
@@ -43,6 +46,8 @@ func Load() *Config {
 	cfg := &Config{
 		Port: getEnvInt("PORT", 8090),
 		Env:  getEnv("ENV", "development"),
+
+		AdminAPIKey: getEnv("ADMIN_API_KEY", "aura-admin-secret-fti-2026"),
 
 		DeepSeekAPIKey:  getEnv("DEEPSEEK_API_KEY", ""),
 		DeepSeekBaseURL: getEnv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),

@@ -117,6 +117,11 @@ func (h *Handler) Upload(w http.ResponseWriter, r *http.Request) {
 
 	// Case 2: Regulation Document (Admin Knowledge Base Ingestion)
 	if uploadType == "regulation" {
+		if !h.verifyAdmin(r) {
+			http.Error(w, "Unauthorized: Kunci otorisasi admin diperlukan untuk mengunggah regulasi resmi", http.StatusUnauthorized)
+			return
+		}
+
 		if publicURL == "" {
 			http.Error(w, "Supabase storage URL required for regulation ingestion", http.StatusInternalServerError)
 			return
@@ -151,7 +156,7 @@ func (h *Handler) Upload(w http.ResponseWriter, r *http.Request) {
 			Type:     "regulation",
 			FileName: header.Filename,
 			FileURL:  publicURL,
-			Message:  fmt.Sprintf("Dokumen regulasi '%s' sedang diindeks ke Pinecone secara otomatis.", docTitle),
+			Message:  fmt.Sprintf("Dokumen regulasi '%s' sedang diindeks ke basis pengetahuan secara otomatis.", docTitle),
 		})
 		return
 	}

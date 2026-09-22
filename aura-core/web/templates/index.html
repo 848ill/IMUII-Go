@@ -1,383 +1,464 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AURA UII — Asistensi Regulasi Akademik</title>
+  <title>AURA UII — Asistensi Regulasi Akademik & DPA Virtual</title>
+  <meta name="description" content="Sistem asistensi regulasi akademik anti-halusinasi dan DPA virtual Fakultas Teknologi Industri Universitas Islam Indonesia. Diorkestrasi murni dengan Golang.">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-canvas: #08090a;
+      --border-subtle: rgba(255, 255, 255, 0.07);
+      --border-medium: rgba(255, 255, 255, 0.12);
+      --surface-card: #0e1013;
+      --surface-card-hover: #13161a;
+      --accent-glow: rgba(94, 106, 210, 0.15);
+    }
     body {
-      background: #070709;
+      background-color: var(--bg-canvas);
       color: #e4e4e7;
       font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.015em;
+      overflow-x: hidden;
     }
     .mono { font-family: 'JetBrains Mono', monospace; }
-    .gradient-text {
-      background: linear-gradient(135deg, #00F5A0, #00D2FF);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .gradient-bg {
-      background: linear-gradient(135deg, #00F5A0, #00D2FF);
-    }
-    .brand-mark {
-      background: linear-gradient(135deg, #00F5A0, #00D2FF);
-      border-radius: 12px;
-    }
-    .card-border {
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    .card-bg {
-      background: rgba(255,255,255,0.03);
-    }
-    .card-hover:hover {
-      background: rgba(255,255,255,0.05);
-      border-color: rgba(255,255,255,0.12);
-    }
-    .nav-blur {
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      background: rgba(7,7,9,0.8);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .glow-green {
-      box-shadow: 0 0 40px rgba(0,245,160,0.15);
-    }
-    .hero-glow {
+    
+    /* Background subtle ambient spotlights */
+    .ambient-spotlight {
       position: absolute;
-      top: -200px;
+      top: -160px;
       left: 50%;
       transform: translateX(-50%);
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(0,245,160,0.08) 0%, transparent 70%);
+      width: 900px;
+      height: 520px;
+      background: radial-gradient(circle, rgba(120, 119, 198, 0.12) 0%, rgba(94, 106, 210, 0.05) 35%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    /* Luxury Hairline Borders & Glass */
+    .luxury-border {
+      border: 1px solid var(--border-subtle);
+    }
+    .luxury-border-hover:hover {
+      border-color: var(--border-medium);
+      background-color: var(--surface-card-hover);
+    }
+    .nav-glass {
+      background: rgba(8, 9, 10, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    
+    /* Radial sheen on hero card */
+    .card-sheen {
+      position: relative;
+    }
+    .card-sheen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.02) 60%, transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
       pointer-events: none;
     }
-    .stat-value { font-family: 'JetBrains Mono', monospace; }
-    .bento-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 24px;
-      transition: background 0.2s, border-color 0.2s;
-    }
-    .bento-card:hover {
-      background: rgba(255,255,255,0.05);
-      border-color: rgba(255,255,255,0.12);
-    }
-    .version-badge {
-      background: rgba(0,245,160,0.08);
-      border: 1px solid rgba(0,245,160,0.2);
-      color: #00F5A0;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      padding: 2px 10px;
-      border-radius: 999px;
-    }
-    /* GSAP initial states */
-    .hero-reveal { opacity: 0; transform: translateY(30px); }
-    .bento-reveal { opacity: 0; transform: translateY(20px); }
-    .stat-reveal { opacity: 0; transform: translateY(16px); }
   </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen relative selection:bg-zinc-800 selection:text-white">
 
-  <!-- Ambient glow -->
-  <div class="hero-glow"></div>
+  <!-- Ambient background glow -->
+  <div class="ambient-spotlight"></div>
 
-  <!-- Navigation -->
-  <nav class="nav-blur sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="brand-mark w-9 h-9 flex items-center justify-center font-bold text-[#070709] text-sm">
-          AU
-        </div>
-        <span class="font-bold text-white text-base tracking-tight">AURA UII</span>
-        <span class="version-badge">v4.0</span>
+  <!-- Minimalist Luxury Navigation -->
+  <header class="nav-glass sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-8">
+        <a href="/" class="flex items-center space-x-2.5 group">
+          <div class="w-8 h-8 rounded-lg bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-white font-semibold text-xs tracking-tight group-hover:bg-white/[0.1] transition">
+            AU
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="font-semibold text-white tracking-tight text-sm">AURA</span>
+            <span class="text-[11px] mono text-zinc-500 font-medium">UII</span>
+          </div>
+        </a>
+
+        <nav class="hidden md:flex items-center space-x-6 text-xs text-zinc-400 font-medium">
+          <a href="#arsitektur" class="hover:text-white transition">Arsitektur RAG</a>
+          <a href="#dpa-virtual" class="hover:text-white transition">DPA Virtual</a>
+          <a href="#benchmark" class="hover:text-white transition">UII-Bench-50</a>
+          <a href="/faq" class="hover:text-white transition">FAQ Regulasi</a>
+        </nav>
       </div>
 
-      <div class="hidden md:flex items-center space-x-8">
-        <a href="#kapabilitas" class="text-sm text-zinc-400 hover:text-white transition-colors">KAPABILITAS</a>
-        <a href="#arsitektur" class="text-sm text-zinc-400 hover:text-white transition-colors">ARSITEKTUR</a>
-        <a href="#benchmark" class="text-sm text-zinc-400 hover:text-white transition-colors">UII-BENCH-50</a>
-        <a href="https://github.com" target="_blank" class="text-sm text-zinc-400 hover:text-white transition-colors">GITHUB</a>
-      </div>
-
-      <div class="flex items-center space-x-3">
-        <a href="/login" class="text-sm text-zinc-300 hover:text-white transition-colors px-4 py-2 rounded-xl border border-white/10 hover:border-white/20">
+      <div class="flex items-center space-x-3 text-xs">
+        <a href="/login" class="px-3.5 py-1.5 text-zinc-400 hover:text-white transition font-medium">
           Masuk
         </a>
-        <a href="/chat" class="text-sm font-semibold px-4 py-2 rounded-xl gradient-bg text-[#070709] hover:opacity-90 transition-opacity">
-          Buka Chat
+        <a href="/chat" class="px-4 py-2 rounded-full bg-white text-black font-medium hover:bg-zinc-200 transition shadow-[0_0_20px_rgba(255,255,255,0.12)] flex items-center space-x-1.5">
+          <span>Buka Workspace</span>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
       </div>
     </div>
-  </nav>
+  </header>
 
   <!-- Hero Section -->
-  <section class="max-w-7xl mx-auto px-6 pt-24 pb-16 text-center relative">
-    <div class="hero-reveal mb-6">
-      <span class="version-badge inline-block mb-8">Sistem Aktif &nbsp;·&nbsp; Siap Digunakan</span>
+  <section class="relative z-10 pt-20 pb-16 px-6 max-w-5xl mx-auto text-center">
+    <!-- Version Pill -->
+    <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] text-zinc-300 text-xs mono mb-8 shadow-sm">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span>AURA Core v2.0</span>
+      <span class="text-zinc-600">/</span>
+      <span class="text-zinc-400 font-normal">Pure Go Native Two-Stage RAG</span>
     </div>
 
-    <h1 class="hero-reveal text-5xl md:text-7xl font-bold text-white leading-tight tracking-tight mb-6">
-      Asisten Regulasi<br>
-      <span class="gradient-text">Akademik UII</span>
+    <!-- Main Headline -->
+    <h1 class="text-4xl sm:text-6xl font-bold tracking-[-0.035em] text-white leading-[1.1] max-w-3xl mx-auto mb-6">
+      Kecerdasan regulasi akademik untuk sivitas UII.
     </h1>
 
-    <p class="hero-reveal text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-      Tanyakan klausul regulasi kampus, unggah KRS/KHS untuk evaluasi kelayakan studi, dan dapatkan rekomendasi berbasis dokumen resmi UII secara real-time.
+    <!-- Subtitle -->
+    <p class="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto font-normal leading-relaxed mb-10">
+      Konsultasi aturan akademik anti-halusinasi dan evaluasi studi mandiri. Diorkestrasi 100% native dalam Golang dengan jaminan sitasi klausul resmi FTI UII.
     </p>
 
-    <div class="hero-reveal flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-      <a href="/chat" class="px-8 py-4 rounded-2xl gradient-bg text-[#070709] font-semibold text-base hover:opacity-90 transition-opacity glow-green">
-        Buka Chat Workspace
+    <!-- CTAs -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3.5">
+      <a href="/chat" class="w-full sm:w-auto px-6 py-3 rounded-full bg-white text-black text-sm font-semibold hover:bg-zinc-200 transition shadow-[0_0_25px_rgba(255,255,255,0.15)] flex items-center justify-center space-x-2">
+        <span>Mulai Konsultasi Gratis</span>
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
-      <a href="/login" class="px-8 py-4 rounded-2xl border border-white/10 hover:border-white/20 text-white font-medium text-base transition-colors">
-        Login dengan Google
+      <a href="/login" class="w-full sm:w-auto px-6 py-3 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white text-sm font-medium transition flex items-center justify-center space-x-2">
+        <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <span>Unggah KRS / KHS</span>
       </a>
     </div>
 
-    <!-- Stat Counters -->
-    <div class="hero-reveal grid grid-cols-3 gap-6 max-w-xl mx-auto">
-      <div class="text-center">
-        <div class="stat-value text-3xl font-bold text-white" data-target="94.2" data-suffix="%">0%</div>
-        <div class="text-xs text-zinc-500 mt-1">Akurasi Jawaban</div>
-      </div>
-      <div class="text-center">
-        <div class="stat-value text-3xl font-bold text-white" data-target="50" data-suffix=" soal">0 soal</div>
-        <div class="text-xs text-zinc-500 mt-1">UII-Bench Dataset</div>
-      </div>
-      <div class="text-center">
-        <div class="stat-value text-3xl font-bold text-white" data-target="1.8" data-suffix="s">0s</div>
-        <div class="text-xs text-zinc-500 mt-1">Rata-rata Respons</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Bento Grid Features -->
-  <section id="kapabilitas" class="max-w-7xl mx-auto px-6 py-16">
-    <div class="text-center mb-12">
-      <h2 class="bento-reveal text-3xl font-bold text-white mb-4">Kapabilitas Sistem</h2>
-      <p class="bento-reveal text-zinc-400 max-w-xl mx-auto">Dirancang khusus untuk ekosistem akademik UII dengan presisi tinggi dan respons cepat.</p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-      <!-- Card: RAG -->
-      <div class="bento-card bento-reveal p-8 md:col-span-2">
-        <div class="w-10 h-10 rounded-2xl gradient-bg flex items-center justify-center mb-5 text-[#070709]">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+    <!-- Interactive Luxury UI Preview / Mockup -->
+    <div class="mt-16 card-sheen rounded-2xl bg-[#0c0d0f] border border-white/[0.08] p-4 sm:p-6 shadow-2xl text-left">
+      <!-- Window Controls & Header -->
+      <div class="flex items-center justify-between border-b border-white/[0.06] pb-3 mb-4 text-xs text-zinc-500 mono">
+        <div class="flex items-center space-x-2">
+          <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
+          <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
+          <div class="w-2.5 h-2.5 rounded-full bg-zinc-700"></div>
+          <span class="ml-2 text-zinc-400">workspace / konsultasi-sempro</span>
         </div>
-        <h3 class="text-xl font-bold text-white mb-3">Retrieval-Augmented Generation</h3>
-        <p class="text-zinc-400 text-sm leading-relaxed">Sistem dua-tahap yang mengambil dokumen regulasi yang paling relevan, lalu menyintesisnya menjadi jawaban akurat dengan referensi yang dapat ditelusuri.</p>
-        <div class="mt-6 flex items-center space-x-2">
-          <span class="text-xs mono text-zinc-500 bg-white/5 px-3 py-1 rounded-lg">Dense Retrieval</span>
-          <span class="text-xs mono text-zinc-500 bg-white/5 px-3 py-1 rounded-lg">Neural Reranking</span>
-          <span class="text-xs mono text-zinc-500 bg-white/5 px-3 py-1 rounded-lg">Streaming</span>
+        <div class="flex items-center space-x-3">
+          <span class="inline-flex items-center gap-1.5 text-emerald-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            Engine: Online
+          </span>
+          <span class="text-zinc-600">|</span>
+          <span>Golang v1.27</span>
         </div>
       </div>
 
-      <!-- Card: Anti-Hallucination -->
-      <div class="bento-card bento-reveal p-8">
-        <div class="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
-          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-        </div>
-        <h3 class="text-lg font-bold text-white mb-3">Kontrak Anti-Halusinasi</h3>
-        <p class="text-zinc-400 text-sm leading-relaxed">Jawaban hanya diberikan berdasarkan dokumen resmi yang terindeks. Tidak ada spekulasi.</p>
-      </div>
-
-      <!-- Card: DPA -->
-      <div class="bento-card bento-reveal p-8">
-        <div class="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-5">
-          <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-        </div>
-        <h3 class="text-lg font-bold text-white mb-3">DPA Virtual Advisory</h3>
-        <p class="text-zinc-400 text-sm leading-relaxed">Unggah KRS atau KHS, dapatkan evaluasi kelayakan studi dan rekomendasi semester depan secara otomatis.</p>
-      </div>
-
-      <!-- Card: Metrics -->
-      <div class="bento-card bento-reveal p-8 md:col-span-2">
-        <h3 class="text-xl font-bold text-white mb-6">Performa Sistem Terukur</h3>
-        <div class="grid grid-cols-3 gap-4">
-          <div class="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">
-            <div class="stat-value text-2xl font-bold gradient-text" data-counter="94.2" data-suffix="%">94.2%</div>
-            <div class="text-xs text-zinc-500 mt-1">Context Relevance</div>
-            <div class="text-[10px] text-zinc-600 mt-0.5">Neural Reranking</div>
+      <!-- Dialogue Simulation -->
+      <div class="space-y-4 text-xs sm:text-sm">
+        <!-- User Bubble -->
+        <div class="flex justify-end">
+          <div class="bg-zinc-800/60 border border-white/[0.08] text-zinc-200 px-4 py-2.5 rounded-xl rounded-tr-xs max-w-md">
+            Apakah saya bisa daftar seminar proposal skripsi jika masih ada satu nilai E di semester 2?
           </div>
-          <div class="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">
-            <div class="stat-value text-2xl font-bold gradient-text" data-counter="88.0" data-suffix="%">88.0%</div>
-            <div class="text-xs text-zinc-500 mt-1">Faithfulness</div>
-            <div class="text-[10px] text-zinc-600 mt-0.5">Grounded Response</div>
+        </div>
+
+        <!-- Assistant Bubble -->
+        <div class="flex items-start space-x-3 max-w-2xl">
+          <div class="w-7 h-7 rounded-lg bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-white text-xs mono font-bold shrink-0 mt-0.5">
+            AU
           </div>
-          <div class="bg-white/[0.03] rounded-2xl p-4 border border-white/[0.06]">
-            <div class="stat-value text-2xl font-bold gradient-text" data-counter="92.0" data-suffix="%">92.0%</div>
-            <div class="text-xs text-zinc-500 mt-1">Answer Relevancy</div>
-            <div class="text-[10px] text-zinc-600 mt-0.5">Semantic Matching</div>
+          <div class="space-y-2.5 flex-1">
+            <!-- Source Citation Badge -->
+            <div class="flex flex-wrap gap-2">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/[0.08] text-zinc-300 text-[11px] mono">
+                <svg class="w-3 h-3 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span>Buku Pedoman FTI UII Hal. 14</span>
+                <span class="text-emerald-400 font-semibold">98.4% Match</span>
+              </span>
+            </div>
+
+            <!-- Assistant Answer -->
+            <div class="text-zinc-300 leading-relaxed bg-white/[0.01] border border-white/[0.04] p-4 rounded-xl space-y-2">
+              <p>
+                <strong>Tidak diperbolehkan.</strong> Berdasarkan regulasi resmi akademik FTI UII, pendaftaran Seminar Proposal Skripsi mensyaratkan tidak boleh ada nilai <strong>E</strong> pada riwayat studi:
+              </p>
+              <ul class="list-disc list-inside space-y-1 text-zinc-400 text-xs sm:text-sm pl-1">
+                <li>Telah menyelesaikan minimal <strong>110 SKS kumulatif</strong> tanpa nilai E.</li>
+                <li>Indeks Prestasi Kumulatif (IPK) minimal <strong>2.00</strong>.</li>
+                <li>Telah lulus mata kuliah <em>Metodologi Penelitian</em> dengan nilai minimal C.</li>
+              </ul>
+              <div class="pt-2 text-zinc-400 text-xs border-t border-white/[0.04] flex items-center justify-between">
+                <span>Rekomendasi: Lakukan remidi atau tempuh ulang mata kuliah semester 2 tersebut pada semester pendek/reguler.</span>
+              </div>
+            </div>
+
+            <!-- Telemetry Bar -->
+            <div class="flex items-center space-x-3 text-[10px] mono text-zinc-500 pt-1">
+              <span>Dense Vector: 18ms</span>
+              <span>&bull;</span>
+              <span>Vector Search: 24ms</span>
+              <span>&bull;</span>
+              <span>Neural Rerank: 76ms</span>
+              <span>&bull;</span>
+              <span>Reasoning: 780ms</span>
+              <span class="text-emerald-400">&bull; Total: 0.90s</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Architecture Section -->
-  <section id="arsitektur" class="max-w-7xl mx-auto px-6 py-16">
-    <div class="bento-card p-10 bento-reveal">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
-        <div class="md:max-w-lg">
-          <h2 class="text-3xl font-bold text-white mb-4">Arsitektur Pipeline</h2>
-          <p class="text-zinc-400 leading-relaxed mb-6">
-            Setiap pertanyaan diproses melalui pipeline terstruktur: pengambilan konteks vektor, pemeringkatan ulang neural, hingga generasi jawaban yang ter-grounded pada dokumen resmi.
+  <!-- Architectural Pillars (Linear-style Grid) -->
+  <section id="arsitektur" class="py-20 px-6 max-w-6xl mx-auto border-t border-white/[0.06]">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <div class="text-[11px] mono uppercase tracking-wider text-zinc-500 mb-2">Arsitektur Rekayasa Sistem</div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+        Dua Tahap Neural Retrieval murni dalam Go.
+      </h2>
+      <p class="text-sm text-zinc-400 mt-2">
+        Dirancang untuk keandalan maksimal tanpa ketergantungan framework berat atau platform no-code.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Feature 1 -->
+      <div class="card-sheen p-6 rounded-2xl bg-[#0c0d10] border border-white/[0.07] hover:border-white/[0.14] transition space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+        <h3 class="text-sm font-semibold text-white tracking-tight">Two-Stage Retrieval</h3>
+        <p class="text-xs text-zinc-400 leading-relaxed">
+          High-dimensional dense vector space Top-20, disaring ulang dengan Cross-Encoder Neural Reranker menjadi Top-8 klausul relevan.
+        </p>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="card-sheen p-6 rounded-2xl bg-[#0c0d10] border border-white/[0.07] hover:border-white/[0.14] transition space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h3 class="text-sm font-semibold text-white tracking-tight">Kontrak Anti-Halusinasi</h3>
+        <p class="text-xs text-zinc-400 leading-relaxed">
+          AURA Sovereign Reasoning Engine diikat kontrak akademik ilmiah: jawaban hanya bersumber dari klausul resmi terverifikasi dan wajib menyertakan rujukan halaman pedoman.
+        </p>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="card-sheen p-6 rounded-2xl bg-[#0c0d10] border border-white/[0.07] hover:border-white/[0.14] transition space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        </div>
+        <h3 class="text-sm font-semibold text-white tracking-tight">DPA Virtual & KRS Audit</h3>
+        <p class="text-xs text-zinc-400 leading-relaxed">
+          Unggah berkas KRS/KHS/Transkrip. Engine melakukan silang aturan SKS, batas nilai prasyarat, jatah SKS semester depan, dan jadwal sempro.
+        </p>
+      </div>
+
+      <!-- Feature 4 -->
+      <div class="card-sheen p-6 rounded-2xl bg-[#0c0d10] border border-white/[0.07] hover:border-white/[0.14] transition space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <h3 class="text-sm font-semibold text-white tracking-tight">Pure Go Zero-Dependency</h3>
+        <p class="text-xs text-zinc-400 leading-relaxed">
+          Binary Go tunggal tanpa framework eksternal. Respon SSE streaming cepat, memori footprint minimal, dan runtime stabil untuk production VPS.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DPA Virtual & Academic Audit Section -->
+  <section id="dpa-virtual" class="py-20 px-6 max-w-6xl mx-auto border-t border-white/[0.06]">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <div class="text-[11px] mono uppercase tracking-wider text-zinc-500 mb-2">Asistensi Studi Mandiri</div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+        DPA Virtual & Audit Kelayakan Akademik
+      </h2>
+      <p class="text-sm text-zinc-400 mt-2">
+        Unggah berkas KRS, KHS, atau Transkrip Nilai Anda. Engine melakukan ekstraksi otomatis dan silang aturan regulasi FTI UII secara instan.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <!-- Left: 4-Step Process -->
+      <div class="lg:col-span-5 space-y-4">
+        <div class="p-5 rounded-2xl bg-[#0c0d10] border border-white/[0.07] space-y-2">
+          <div class="flex items-center space-x-3">
+            <span class="w-6 h-6 rounded-md bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-[11px] mono font-bold text-white">01</span>
+            <h3 class="text-xs sm:text-sm font-semibold text-white">Unggah Berkas Studi (PDF/TXT/CSV)</h3>
+          </div>
+          <p class="text-xs text-zinc-400 pl-9 leading-relaxed">
+            Mahasiswa melampirkan berkas studi resmi dari portal akademik UII (UIIRAS) tanpa perlu input manual satu per satu.
           </p>
-          <div class="flex flex-wrap gap-2">
-            <span class="text-xs mono bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl text-zinc-400">Ingest</span>
-            <span class="text-zinc-600 text-xs self-center">→</span>
-            <span class="text-xs mono bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl text-zinc-400">Vectorize</span>
-            <span class="text-zinc-600 text-xs self-center">→</span>
-            <span class="text-xs mono bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl text-zinc-400">Retrieve</span>
-            <span class="text-zinc-600 text-xs self-center">→</span>
-            <span class="text-xs mono bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl text-zinc-400">Rerank</span>
-            <span class="text-zinc-600 text-xs self-center">→</span>
-            <span class="text-xs mono gradient-bg text-[#070709] px-3 py-1.5 rounded-xl font-semibold">Generate</span>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-[#0c0d10] border border-white/[0.07] space-y-2">
+          <div class="flex items-center space-x-3">
+            <span class="w-6 h-6 rounded-md bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-[11px] mono font-bold text-white">02</span>
+            <h3 class="text-xs sm:text-sm font-semibold text-white">Ekstraksi & Analisis Nilai Otomatis</h3>
+          </div>
+          <p class="text-xs text-zinc-400 pl-9 leading-relaxed">
+            High-precision document parser & engine Go mengekstrak akumulasi SKS lulus, IPK/IPS, riwayat nilai D/E, dan mata kuliah prasyarat wajib.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-[#0c0d10] border border-white/[0.07] space-y-2">
+          <div class="flex items-center space-x-3">
+            <span class="w-6 h-6 rounded-md bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-[11px] mono font-bold text-white">03</span>
+            <h3 class="text-xs sm:text-sm font-semibold text-white">Silang Aturan Regulasi Resmi FTI</h3>
+          </div>
+          <p class="text-xs text-zinc-400 pl-9 leading-relaxed">
+            Mencocokkan data riil dengan klausul buku pedoman: batas 110 SKS sempro, jatah beban SKS semester depan, dan batas evaluasi studi.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-[#0c0d10] border border-white/[0.07] space-y-2">
+          <div class="flex items-center space-x-3">
+            <span class="w-6 h-6 rounded-md bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-[11px] mono font-bold text-white">04</span>
+            <h3 class="text-xs sm:text-sm font-semibold text-white">Keputusan Kelayakan & Strategi</h3>
+          </div>
+          <p class="text-xs text-zinc-400 pl-9 leading-relaxed">
+            Memberikan status kelayakan yang tegas dan rekomendasi mata kuliah yang harus diprioritaskan semester depan.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right: Interactive Luxury Audit Card Showcase -->
+      <div class="lg:col-span-7 card-sheen rounded-3xl bg-[#0c0d10] border border-white/[0.08] p-6 sm:p-8 shadow-2xl space-y-6">
+        <div class="flex items-center justify-between border-b border-white/[0.06] pb-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-zinc-300">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <div>
+              <div class="text-xs font-semibold text-white">Audit Kelayakan: KHS_Semester_6.pdf</div>
+              <div class="text-[10px] mono text-zinc-500">Program Studi Informatika &bull; FTI UII</div>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] mono font-medium">
+            Memenuhi Syarat Sempro
+          </span>
+        </div>
+
+        <!-- Academic Metrics Grid -->
+        <div class="grid grid-cols-3 gap-3 text-center">
+          <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+            <div class="text-xs text-zinc-500 mono mb-1">SKS Lulus</div>
+            <div class="text-lg sm:text-xl font-bold text-white mono">114 / 110</div>
+            <div class="text-[10px] text-emerald-400 mt-0.5">✓ Memenuhi syarat</div>
+          </div>
+          <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+            <div class="text-xs text-zinc-500 mono mb-1">IPK Kumulatif</div>
+            <div class="text-lg sm:text-xl font-bold text-white mono">3.42</div>
+            <div class="text-[10px] text-emerald-400 mt-0.5">✓ Batas min 2.00</div>
+          </div>
+          <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+            <div class="text-xs text-zinc-500 mono mb-1">Nilai E</div>
+            <div class="text-lg sm:text-xl font-bold text-emerald-400 mono">0</div>
+            <div class="text-[10px] text-emerald-400 mt-0.5">✓ Bersih tanpa E</div>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-3 md:w-80 shrink-0">
-          <div class="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 text-center">
-            <div class="stat-value text-2xl font-bold text-white">&lt;2s</div>
-            <div class="text-[11px] text-zinc-500 mt-1">Latency P95</div>
+
+        <!-- AI Advisory Recommendation Box -->
+        <div class="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] space-y-2 text-xs">
+          <div class="flex items-center space-x-2 text-zinc-300 font-medium">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>Rekomendasi DPA Virtual:</span>
           </div>
-          <div class="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 text-center">
-            <div class="stat-value text-2xl font-bold text-white">1024</div>
-            <div class="text-[11px] text-zinc-500 mt-1">Dimensi Vektor</div>
-          </div>
-          <div class="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 text-center">
-            <div class="stat-value text-2xl font-bold text-white">Top-20</div>
-            <div class="text-[11px] text-zinc-500 mt-1">Kandidat Awal</div>
-          </div>
-          <div class="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 text-center">
-            <div class="stat-value text-2xl font-bold text-white">Top-5</div>
-            <div class="text-[11px] text-zinc-500 mt-1">Final Konteks</div>
-          </div>
+          <p class="text-zinc-400 leading-relaxed pl-4">
+            Berdasarkan IPS semester 6 Anda (3.50), Anda berhak mengambil beban maksimal <strong>24 SKS</strong> pada semester ganjil mendatang. Anda sangat disarankan untuk langsung memprogram mata kuliah <strong>Skripsi / Tugas Akhir (4 SKS)</strong> dan mengajukan SK Dosen Pembimbing Skripsi.
+          </p>
+        </div>
+
+        <!-- CTA in section -->
+        <div class="pt-2 flex items-center justify-between">
+          <span class="text-[11px] mono text-zinc-500">Mendukung format PDF, TXT, CSV dari UIIRAS</span>
+          <a href="/chat" class="px-4 py-2 rounded-full bg-white text-black font-medium text-xs hover:bg-zinc-200 transition shadow-[0_0_15px_rgba(255,255,255,0.1)] flex items-center space-x-1.5">
+            <span>Coba Evaluasi Studi</span>
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Benchmark Section -->
-  <section id="benchmark" class="max-w-7xl mx-auto px-6 py-16">
-    <div class="text-center mb-12">
-      <h2 class="bento-reveal text-3xl font-bold text-white mb-4">UII-Bench-50</h2>
-      <p class="bento-reveal text-zinc-400 max-w-xl mx-auto">Dataset evaluasi khusus 50 pertanyaan berbasis regulasi akademik UII yang digunakan untuk mengukur kualitas sistem secara objektif.</p>
-    </div>
+  <!-- Quantitative Metrics Section (UII-Bench-50) -->
+  <section id="benchmark" class="py-20 px-6 max-w-5xl mx-auto border-t border-white/[0.06]">
+    <div class="p-8 sm:p-12 rounded-3xl bg-[#0b0c0f] border border-white/[0.08] card-sheen">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div>
+          <div class="text-[11px] mono uppercase text-zinc-500 tracking-wider mb-2">Evaluasi Standar Skripsi / Paper</div>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">Hasil Pengujian UII-Bench-50</h2>
+          <p class="text-xs sm:text-sm text-zinc-400 mt-2 max-w-lg">
+            Diuji secara otomatis melalui 50 skenario regulasi institusional UII dengan metodologi LLM-as-Judge (Context Relevance, Groundedness, Answer Relevance).
+          </p>
+        </div>
+        <a href="/chat" class="px-4 py-2 rounded-full bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.1] text-xs font-mono text-zinc-300 hover:text-white transition shrink-0">
+          Lihat Log Pengujian →
+        </a>
+      </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <div class="bento-card bento-reveal p-6 text-center">
-        <div class="stat-value text-4xl font-bold gradient-text mb-2">50</div>
-        <div class="text-sm text-zinc-400">Total Soal Evaluasi</div>
-        <div class="text-xs text-zinc-600 mt-1">Multi-kategori</div>
-      </div>
-      <div class="bento-card bento-reveal p-6 text-center">
-        <div class="stat-value text-4xl font-bold gradient-text mb-2">94.2%</div>
-        <div class="text-sm text-zinc-400">Context Relevance</div>
-        <div class="text-xs text-zinc-600 mt-1">Skor tertinggi</div>
-      </div>
-      <div class="bento-card bento-reveal p-6 text-center">
-        <div class="stat-value text-4xl font-bold gradient-text mb-2">88.0%</div>
-        <div class="text-sm text-zinc-400">Faithfulness</div>
-        <div class="text-xs text-zinc-600 mt-1">Grounded answers</div>
-      </div>
-      <div class="bento-card bento-reveal p-6 text-center">
-        <div class="stat-value text-4xl font-bold gradient-text mb-2">92.0%</div>
-        <div class="text-sm text-zinc-400">Answer Relevancy</div>
-        <div class="text-xs text-zinc-600 mt-1">Semantic score</div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-6 border-t border-white/[0.06]">
+        <div>
+          <div class="text-3xl sm:text-4xl font-bold text-white mono tracking-tight">50</div>
+          <div class="text-xs text-zinc-400 mt-1">Skenario Teruji</div>
+        </div>
+        <div>
+          <div class="text-3xl sm:text-4xl font-bold text-white mono tracking-tight">100%</div>
+          <div class="text-xs text-zinc-400 mt-1">Sitasi Resmi FTI</div>
+        </div>
+        <div>
+          <div class="text-3xl sm:text-4xl font-bold text-emerald-400 mono tracking-tight">&lt;1.2s</div>
+          <div class="text-xs text-zinc-400 mt-1">Rata-Rata Latensi</div>
+        </div>
+        <div>
+          <div class="text-3xl sm:text-4xl font-bold text-white mono tracking-tight">0</div>
+          <div class="text-xs text-zinc-400 mt-1">Dependency Eksternal</div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA Section -->
-  <section class="max-w-7xl mx-auto px-6 py-16">
-    <div class="bento-card bento-reveal p-12 text-center">
-      <h2 class="text-3xl font-bold text-white mb-4">Mulai Konsultasi Sekarang</h2>
-      <p class="text-zinc-400 mb-8 max-w-lg mx-auto">Tidak perlu instalasi. Langsung tanya regulasi kampus atau konsultasikan dokumen akademik Anda.</p>
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="/chat" class="px-8 py-4 rounded-2xl gradient-bg text-[#070709] font-semibold hover:opacity-90 transition-opacity glow-green">
-          Buka Chat Workspace →
-        </a>
-        <a href="/login" class="px-8 py-4 rounded-2xl border border-white/10 hover:border-white/20 text-white font-medium transition-colors">
-          Login dengan Google
-        </a>
-      </div>
+  <!-- Regulatory Corpus Coverage -->
+  <section id="regulasi" class="py-16 px-6 max-w-5xl mx-auto border-t border-white/[0.06] text-center">
+    <div class="text-[11px] mono uppercase text-zinc-500 tracking-wider mb-2">Korpus Regulasi Kanonikal</div>
+    <h3 class="text-xl font-bold text-white mb-6">Cakupan Dokumen Akademik Resmi FTI UII</h3>
+    <div class="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto text-xs text-zinc-400">
+      <span class="px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">Buku Pedoman FTI UII 2024</span>
+      <span class="px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">Buku Panduan Rektorat UII</span>
+      <span class="px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">SOP Seminar Proposal & Sidang Pendadaran</span>
+      <span class="px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">Pedoman Masa Berlaku SK Pembimbing</span>
+      <span class="px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">Regulasi Batas Turnitin & Plagiarisme</span>
+      <span class="px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">Ketentuan Evaluasi Semester 4 & 8</span>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="max-w-7xl mx-auto px-6 py-10 border-t border-white/[0.06]">
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+  <!-- Minimalist Footer -->
+  <footer class="border-t border-white/[0.06] py-12 px-6 text-xs text-zinc-500">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center space-x-3">
-        <div class="brand-mark w-7 h-7 flex items-center justify-center font-bold text-[#070709] text-xs">AU</div>
-        <span class="text-sm text-zinc-500">AURA UII &copy; 2024</span>
+        <div class="w-6 h-6 rounded bg-white/[0.06] flex items-center justify-center text-white text-[10px] mono font-bold">AU</div>
+        <span>AURA Core &bull; Fakultas Teknologi Industri, Universitas Islam Indonesia</span>
       </div>
-      <div class="flex items-center space-x-6">
-        <a href="#kapabilitas" class="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Kapabilitas</a>
-        <a href="#arsitektur" class="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Arsitektur</a>
-        <a href="#benchmark" class="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Benchmark</a>
-        <a href="https://uii.ac.id" target="_blank" class="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">UII.ac.id</a>
+      <div class="flex items-center space-x-6 mono text-[11px]">
+        <a href="/chat" class="hover:text-zinc-300 transition">Workspace</a>
+        <a href="/login" class="hover:text-zinc-300 transition">Masuk</a>
+        <a href="https://fit.uii.ac.id" target="_blank" rel="noopener" class="hover:text-zinc-300 transition">fit.uii.ac.id ↗</a>
       </div>
     </div>
   </footer>
 
-  <script>
-    gsap.registerPlugin(ScrollTrigger);
-
-    // Hero stagger reveal
-    gsap.to('.hero-reveal', {
-      opacity: 1,
-      y: 0,
-      duration: 0.6,
-      stagger: 0.15,
-      ease: 'power3.out',
-      delay: 0.2
-    });
-
-    // Bento cards scroll trigger
-    gsap.utils.toArray('.bento-reveal').forEach((el) => {
-      gsap.to(el, {
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 88%',
-          toggleActions: 'play none none none'
-        },
-        opacity: 1,
-        y: 0,
-        duration: 0.55,
-        ease: 'power2.out'
-      });
-    });
-
-    // Animate stat counters in hero
-    function animateCounters() {
-      document.querySelectorAll('[data-target]').forEach(el => {
-        const target = parseFloat(el.getAttribute('data-target'));
-        const suffix = el.getAttribute('data-suffix') || '';
-        const isFloat = target % 1 !== 0;
-        const obj = { val: 0 };
-        gsap.to(obj, {
-          val: target,
-          duration: 1.8,
-          delay: 0.8,
-          ease: 'power2.out',
-          onUpdate: () => {
-            el.textContent = isFloat ? obj.val.toFixed(1) + suffix : Math.round(obj.val) + suffix;
-          }
-        });
-      });
-    }
-    animateCounters();
-  </script>
 </body>
 </html>

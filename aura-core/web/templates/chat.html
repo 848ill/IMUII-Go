@@ -1,38 +1,96 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AURA UII - Asistensi Regulasi Akademik & DPA Virtual (Pure Go)</title>
+  <title>AURA UII — Workspace Konsultasi Akademik</title>
+  <meta name="description" content="Workspace Asistensi Regulasi Akademik & DPA Virtual Fakultas Teknologi Industri UII.">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.9/dist/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+    :root {
+      --bg-canvas: #08090a;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-medium: rgba(255, 255, 255, 0.15);
+      --surface-sidebar: #0a0b0d;
+      --surface-main: #08090a;
+      --surface-card: #0e1014;
     }
+    body {
+      background-color: var(--bg-canvas);
+      color: #e4e4e7;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.015em;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    
+    .card-sheen {
+      position: relative;
+    }
+    .card-sheen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02) 60%, transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    
+    /* Markdown Prose Customization */
     .prose pre {
-      background: #0f172a;
-      color: #f8fafc;
+      background: #0d0e12;
+      border: 1px solid var(--border-subtle);
+      color: #f4f4f5;
       padding: 0.75rem 1rem;
-      border-radius: 0.5rem;
+      border-radius: 0.75rem;
       overflow-x: auto;
     }
     .prose code {
-      background: rgba(15, 23, 42, 0.08);
+      background: rgba(255, 255, 255, 0.06);
+      color: #e4e4e7;
       padding: 0.15rem 0.35rem;
-      border-radius: 0.25rem;
-      font-size: 0.875em;
+      border-radius: 0.35rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85em;
     }
+    .prose p { margin-bottom: 0.75rem; line-height: 1.65; }
+    .prose ul, .prose ol { margin-bottom: 0.75rem; padding-left: 1.25rem; }
+    .prose li { margin-bottom: 0.35rem; }
+    .prose strong { color: #ffffff; font-weight: 600; }
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+    }
+    .prose th, .prose td {
+      border: 1px solid var(--border-subtle);
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+    }
+    .prose th {
+      background: rgba(255, 255, 255, 0.04);
+      color: #ffffff;
+    }
+
+    /* Minimalist Blinking Cursor */
     .typing-cursor::after {
       content: '▋';
       display: inline-block;
       vertical-align: baseline;
-      animation: blink 1s infinite;
-      color: #0284c7;
+      animation: blink 0.9s infinite;
+      color: #a1a1aa;
       margin-left: 2px;
+      font-size: 0.85em;
     }
     @keyframes blink {
       0%, 100% { opacity: 1; }
@@ -40,172 +98,318 @@
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+<body class="min-h-screen flex h-screen overflow-hidden selection:bg-zinc-800 selection:text-white">
+  <!-- Supabase config (injected by Go router) -->
+  <div id="supabase-config" data-url="" data-key="" class="hidden"></div>
 
-  <!-- Navigation Header -->
-  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20 font-bold text-white text-lg">
-          A
+  <!-- Left Sidebar (Linear-style) -->
+  <aside class="w-64 bg-[#0a0b0d] border-r border-white/[0.08] flex flex-col justify-between hidden md:flex shrink-0 z-20">
+    <!-- Top Branding & Navigation -->
+    <div class="p-4 space-y-4 flex-1 flex flex-col min-h-0">
+      <!-- Workspace Brand -->
+      <a href="/" class="flex items-center space-x-2.5 px-2 py-1.5 rounded-xl hover:bg-white/[0.03] transition group shrink-0">
+        <div class="w-7 h-7 rounded-lg bg-white/[0.08] border border-white/[0.1] flex items-center justify-center text-white text-xs mono font-bold group-hover:bg-white/[0.14] transition">
+          AU
         </div>
-        <div>
-          <div class="flex items-center space-x-2">
-            <h1 class="font-bold text-lg text-white tracking-tight">AURA UII</h1>
-            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
-              Pure Go v2.0
-            </span>
-          </div>
-          <p class="text-xs text-slate-400">Two-Stage RAG &bull; DPA Virtual &amp; FTI Compliance</p>
+        <div class="flex items-center space-x-2">
+          <span class="font-semibold text-white text-xs tracking-tight">AURA UII</span>
+          <span class="text-[10px] mono px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-400 border border-white/[0.06]">Go v2.0</span>
         </div>
-      </div>
+      </a>
 
-      <!-- Action & Telemetry Controls -->
-      <div class="flex items-center space-x-3">
-        <button onclick="openRegulationModal()" class="flex items-center space-x-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-sky-400 hover:text-sky-300 px-3 py-1.5 rounded-xl border border-slate-700 transition">
-          <span>➕</span>
-          <span class="hidden sm:inline">Tambah Dokumen Regulasi</span>
-        </button>
+      <!-- New Chat Button -->
+      <button onclick="startNewChat()" class="w-full py-2 px-3 rounded-xl bg-white text-black font-medium text-xs hover:bg-zinc-200 transition shadow-[0_0_15px_rgba(255,255,255,0.1)] flex items-center justify-between shrink-0 cursor-pointer">
+        <span class="flex items-center space-x-2">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <span>Sesi Baru</span>
+        </span>
+        <span class="text-[10px] mono text-zinc-500 font-normal">⌘K</span>
+      </button>
 
-        <div class="hidden lg:flex items-center space-x-4 text-xs text-slate-400 border-l border-slate-800 pl-3">
-          <div class="flex items-center space-x-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>Orchestrator: <strong class="text-slate-200">Golang Native</strong></span>
+      <!-- Scrollable Navigation Area (Sessions + Presets) -->
+      <div class="flex-1 overflow-y-auto space-y-4 pr-1 -mr-1">
+        <!-- Riwayat Konsultasi (Sessions List) -->
+        <div class="space-y-1">
+          <div class="px-2 text-[10px] mono uppercase tracking-wider text-zinc-500 font-semibold mb-1 flex items-center justify-between">
+            <span>Riwayat Konsultasi</span>
+            <span id="sessionCountBadge" class="text-[9px] px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-400 font-mono">0</span>
           </div>
+          <div id="sessionsList" class="space-y-0.5">
+            <div class="text-[11px] text-zinc-600 px-2 py-1 italic">Belum ada riwayat</div>
+          </div>
+        </div>
+
+        <!-- Quick Preset Queries -->
+        <div class="space-y-1 pt-2 border-t border-white/[0.06]">
+          <div class="px-2 text-[10px] mono uppercase tracking-wider text-zinc-500 font-semibold mb-2">Pintasan Regulasi</div>
+          
+          <button onclick="sendPrompt('Apa syarat lengkap mendaftar Seminar Proposal Skripsi di FTI UII?')" class="w-full text-left px-2.5 py-2 rounded-lg text-xs text-zinc-400 hover:text-white hover:bg-white/[0.04] transition flex items-center space-x-2 truncate cursor-pointer">
+            <span class="text-zinc-600 mono text-[10px]">&bull;</span>
+            <span class="truncate">Syarat Sempro Skripsi</span>
+          </button>
+
+          <button onclick="sendPrompt('Berapa lama masa berlaku SK Dosen Pembimbing Skripsi dan bagaimana perpanjangannya?')" class="w-full text-left px-2.5 py-2 rounded-lg text-xs text-zinc-400 hover:text-white hover:bg-white/[0.04] transition flex items-center space-x-2 truncate cursor-pointer">
+            <span class="text-zinc-600 mono text-[10px]">&bull;</span>
+            <span class="truncate">Masa Berlaku SK Pembimbing</span>
+          </button>
+
+          <button onclick="sendPrompt('Berapa batas maksimal toleransi Turnitin similarity index di FTI UII?')" class="w-full text-left px-2.5 py-2 rounded-lg text-xs text-zinc-400 hover:text-white hover:bg-white/[0.04] transition flex items-center space-x-2 truncate cursor-pointer">
+            <span class="text-zinc-600 mono text-[10px]">&bull;</span>
+            <span class="truncate">Batas Toleransi Turnitin</span>
+          </button>
+
+          <button onclick="sendPrompt('Berapa beban SKS maksimal yang boleh diambil berdasarkan perolehan IPS semester lalu?')" class="w-full text-left px-2.5 py-2 rounded-lg text-xs text-zinc-400 hover:text-white hover:bg-white/[0.04] transition flex items-center space-x-2 truncate cursor-pointer">
+            <span class="text-zinc-600 mono text-[10px]">&bull;</span>
+            <span class="truncate">Beban SKS Semester & IPS</span>
+          </button>
+
+          <button onclick="sendPrompt('Berdasarkan berkas KHS/Transkrip terlampir, apakah saya sudah memenuhi syarat sempro dan apa rekomendasi studi saya?')" class="w-full text-left px-2.5 py-2 rounded-lg text-xs text-zinc-300 hover:text-white hover:bg-white/[0.06] transition flex items-center space-x-2 truncate font-medium cursor-pointer">
+            <span class="text-emerald-400 mono text-[10px]">★</span>
+            <span class="truncate">Konsultasi KHS & Rekomendasi</span>
+          </button>
         </div>
       </div>
     </div>
-  </header>
 
-  <!-- Chat Content Area -->
-  <main class="flex-1 max-w-4xl w-full mx-auto p-4 flex flex-col justify-between">
-
-    <!-- Messages Container -->
-    <div id="messagesContainer" class="flex-1 overflow-y-auto space-y-6 pb-6 pt-2">
-      <!-- Welcome Card -->
-      <div class="bg-gradient-to-b from-slate-900 to-slate-900/60 border border-slate-800 rounded-2xl p-6 text-center shadow-xl">
-        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-sky-500/10 text-sky-400 border border-sky-500/20 mb-4 text-2xl">
-          🎓
+    <!-- Bottom System Status & User Profile -->
+    <div class="p-4 border-t border-white/[0.08] space-y-3">
+      <!-- Engine Telemetry Overview -->
+      <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1.5 text-[11px] mono">
+        <div class="flex items-center justify-between">
+          <span class="text-zinc-500">Pipeline</span>
+          <span class="text-zinc-300 font-medium">Two-Stage RAG</span>
         </div>
-        <h2 class="text-xl font-bold text-white mb-2">Asistensi Regulasi Akademik &amp; DPA Virtual</h2>
-        <p class="text-slate-400 text-sm max-w-xl mx-auto mb-6">
-          Didukung oleh arsitektur Two-Stage RAG murni Golang. Tanyakan klausul regulasi kampus, atau <strong>unggah berkas KRS/KHS Anda</strong> untuk evaluasi kelayakan studi &amp; rekomendasi strategi mata kuliah semester depan!
+        <div class="flex items-center justify-between">
+          <span class="text-zinc-500">Vector Index</span>
+          <span class="text-zinc-300">aurarags</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-zinc-500">Status</span>
+          <span class="text-emerald-400 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            Online
+          </span>
+        </div>
+      </div>
+
+      <!-- User Account -->
+      <div class="flex items-center justify-between px-2 pt-1">
+        <div class="flex items-center space-x-2.5 truncate">
+          <div class="w-7 h-7 rounded-full bg-zinc-800 border border-white/[0.1] flex items-center justify-center text-xs text-zinc-300 font-semibold" id="userAvatar">
+            U
+          </div>
+          <div class="truncate">
+            <div class="text-xs font-medium text-white truncate" id="userName">Civitas UII</div>
+            <div class="text-[10px] text-zinc-500 truncate" id="userEmail">guest@uii.ac.id</div>
+          </div>
+        </div>
+        <button onclick="handleLogout()" title="Keluar" class="p-1.5 text-zinc-500 hover:text-white rounded-lg transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Chat Workspace -->
+  <main class="flex-1 flex flex-col h-full bg-[#08090a] relative overflow-hidden">
+    
+    <!-- Top Navigation Bar -->
+    <header class="h-14 border-b border-white/[0.08] bg-[#08090a]/80 backdrop-blur-xl px-6 flex items-center justify-between z-10 shrink-0">
+      <div class="flex items-center space-x-3">
+        <!-- Mobile Toggle (if needed) -->
+        <a href="/" class="md:hidden w-7 h-7 rounded-lg bg-white/[0.08] flex items-center justify-center text-white text-xs mono font-bold">
+          AU
+        </a>
+        <div class="flex items-center space-x-2">
+          <h1 class="text-xs sm:text-sm font-semibold text-white tracking-tight">Konsultasi Regulasi Akademik</h1>
+          <span class="text-zinc-600 hidden sm:inline">&bull;</span>
+          <span class="text-xs text-zinc-400 hidden sm:inline">Fakultas Teknologi Industri UII</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2.5">
+        <!-- Add Regulation Button -->
+        <button onclick="openRegulationModal()" class="px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs text-zinc-300 hover:text-white transition flex items-center space-x-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <span class="hidden sm:inline">Tambah Dokumen Regulasi</span>
+          <span class="sm:hidden">Regulasi</span>
+        </button>
+
+        <!-- FAQ Link -->
+        <a href="/faq" target="_blank" title="Buka Halaman FAQ" class="px-2.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs text-zinc-300 hover:text-white transition flex items-center space-x-1.5">
+          <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span class="hidden sm:inline">FAQ</span>
+        </a>
+
+        <!-- Clear Chat Button -->
+        <button onclick="startNewChat()" title="Bersihkan Obrolan" class="p-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-400 hover:text-white transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Messages Scroll Container -->
+    <div id="messagesContainer" class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 space-y-6">
+      <!-- Empty State / Welcome Screen -->
+      <div id="welcomeScreen" class="max-w-2xl mx-auto text-center pt-8 pb-4 card-sheen p-8 sm:p-10 rounded-3xl bg-[#0c0d10] border border-white/[0.08]">
+        <div class="w-12 h-12 rounded-2xl bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-white text-sm mono font-bold mx-auto mb-4">
+          AU
+        </div>
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white mb-2">
+          Asistensi Regulasi Akademik & DPA Virtual
+        </h2>
+        <p class="text-xs sm:text-sm text-zinc-400 leading-relaxed max-w-lg mx-auto mb-8 font-normal">
+          Didukung oleh arsitektur Two-Stage RAG murni Golang. Tanyakan klausul regulasi kampus, atau <strong class="text-zinc-200">unggah berkas KRS/KHS/Transkrip</strong> Anda untuk evaluasi kelayakan studi secara otomatis.
         </p>
 
-        <!-- Quick Prompt Chips -->
-        <div class="flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto">
-          <button onclick="sendPrompt('Apa syarat mendaftar Seminar Proposal Skripsi di FTI UII?')" class="text-xs bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 px-3 py-2 rounded-xl border border-slate-700/50 transition">
-            📋 Syarat Sempro Skripsi FTI
+        <!-- Suggested Prompt Chips -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left">
+          <button onclick="sendPrompt('Apa syarat mendaftar Seminar Proposal Skripsi di FTI UII?')" class="p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] hover:border-white/[0.12] transition text-xs text-zinc-300 space-y-1">
+            <div class="font-medium text-white flex items-center justify-between">
+              <span>Syarat Sempro Skripsi</span>
+              <span class="text-zinc-600 mono text-[10px]">→</span>
+            </div>
+            <div class="text-[11px] text-zinc-500">SKS minimal, IPK, dan prasyarat nilai E</div>
           </button>
-          <button onclick="sendPrompt('Berapa lama masa berlaku SK Dosen Pembimbing Skripsi?')" class="text-xs bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 px-3 py-2 rounded-xl border border-slate-700/50 transition">
-            ⏳ Masa Berlaku SK Pembimbing
+
+          <button onclick="sendPrompt('Berapa lama masa berlaku SK Dosen Pembimbing Skripsi?')" class="p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] hover:border-white/[0.12] transition text-xs text-zinc-300 space-y-1">
+            <div class="font-medium text-white flex items-center justify-between">
+              <span>SK Pembimbing Skripsi</span>
+              <span class="text-zinc-600 mono text-[10px]">→</span>
+            </div>
+            <div class="text-[11px] text-zinc-500">Masa kedaluwarsa 6 bulan & perpanjangan</div>
           </button>
-          <button onclick="sendPrompt('Berapa batas maksimal toleransi Turnitin di FTI UII?')" class="text-xs bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 px-3 py-2 rounded-xl border border-slate-700/50 transition">
-            🔍 Batas Toleransi Turnitin
+
+          <button onclick="sendPrompt('Berapa batas maksimal toleransi Turnitin di FTI UII?')" class="p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] hover:border-white/[0.12] transition text-xs text-zinc-300 space-y-1">
+            <div class="font-medium text-white flex items-center justify-between">
+              <span>Batas Turnitin Similarity</span>
+              <span class="text-zinc-600 mono text-[10px]">→</span>
+            </div>
+            <div class="text-[11px] text-zinc-500">Aturan toleransi 20% & sanksi plagiasi</div>
           </button>
-          <button onclick="sendPrompt('Berdasarkan data KHS saya, apakah saya sudah memenuhi syarat untuk daftar sempro dan apa rekomendasi matkul semester depan?')" class="text-xs bg-sky-950/80 hover:bg-sky-900/80 text-sky-300 px-3 py-2 rounded-xl border border-sky-800/60 transition">
-            💡 Konsultasi KHS &amp; Rekomendasi Studi
+
+          <button onclick="sendPrompt('Berapa beban SKS yang boleh diambil jika IPS saya 2.40?')" class="p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] hover:border-white/[0.12] transition text-xs text-zinc-300 space-y-1">
+            <div class="font-medium text-white flex items-center justify-between">
+              <span>Beban SKS Semester</span>
+              <span class="text-zinc-600 mono text-[10px]">→</span>
+            </div>
+            <div class="text-[11px] text-zinc-500">Perhitungan batas SKS berdasarkan IPS</div>
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Sticky Input Box -->
-    <div class="sticky bottom-0 bg-slate-950/80 backdrop-blur-xl pt-2 pb-2">
-      
-      <!-- Attached File Preview Badge -->
-      <div id="attachedFileCard" class="hidden mb-2 bg-sky-950/70 border border-sky-800/60 rounded-xl px-4 py-2 flex items-center justify-between shadow-md">
-        <div class="flex items-center space-x-2 text-xs text-sky-200 truncate">
-          <span class="text-lg">📄</span>
-          <div>
-            <strong id="attachedFileName" class="text-white block truncate">dokumen.pdf</strong>
-            <span id="attachedFileSummary" class="text-[11px] text-sky-400">Berkas akademik terlampir</span>
+    <!-- Command-Bar Input Area -->
+    <div class="px-4 sm:px-8 pb-4 pt-2 bg-[#08090a]/90 backdrop-blur-xl border-t border-white/[0.06] z-10 shrink-0">
+      <div class="max-w-3xl mx-auto">
+        
+        <!-- Attached Student File Chip Preview -->
+        <div id="attachedFileCard" class="hidden mb-2.5 p-2.5 rounded-xl bg-[#0f1115] border border-white/[0.1] flex items-center justify-between text-xs">
+          <div class="flex items-center space-x-2.5 truncate">
+            <div class="w-6 h-6 rounded-lg bg-white/[0.08] flex items-center justify-center text-zinc-300 shrink-0">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <div class="truncate">
+              <span id="attachedFileName" class="font-medium text-white block truncate">berkas.pdf</span>
+              <span id="attachedFileSummary" class="text-[10px] text-zinc-400 truncate block">Berkas akademik terlampir</span>
+            </div>
           </div>
-        </div>
-        <button onclick="removeAttachedFile()" class="p-1 hover:bg-sky-900/80 rounded-lg text-slate-400 hover:text-white transition">
-          ✕
-        </button>
-      </div>
-
-      <!-- Chat Form -->
-      <form id="chatForm" onsubmit="handleSubmit(event)" class="relative flex items-center space-x-2">
-        <!-- Hidden File Input for Student Document -->
-        <input type="file" id="studentFileInput" class="hidden" accept=".pdf,.txt,.csv,.md,.png,.jpg" onchange="uploadStudentDoc(this.files[0])" />
-
-        <!-- Attachment Button -->
-        <button 
-          type="button" 
-          onclick="document.getElementById('studentFileInput').click()" 
-          title="Unggah berkas KRS, KHS, atau Transkrip Nilai Anda"
-          class="p-3.5 bg-slate-900 border border-slate-800 hover:border-slate-700 hover:text-sky-400 text-slate-400 rounded-2xl transition shadow-lg shrink-0 flex items-center justify-center"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-          </svg>
-        </button>
-
-        <!-- Text Input -->
-        <div class="relative flex-1">
-          <input 
-            id="queryInput"
-            type="text" 
-            placeholder="Tanyakan regulasi atau konsultasikan KRS/KHS Anda..."
-            class="w-full bg-slate-900 border border-slate-800 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-100 placeholder-slate-500 text-sm rounded-2xl pl-5 pr-14 py-4 shadow-lg outline-none transition"
-            autocomplete="off"
-          />
-          <button 
-            id="submitBtn"
-            type="submit"
-            class="absolute right-2.5 top-2.5 p-2 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white rounded-xl shadow-md transition disabled:opacity-40"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-            </svg>
+          <button onclick="removeAttachedFile()" class="p-1 text-zinc-500 hover:text-white rounded-lg transition">
+            ✕
           </button>
         </div>
-      </form>
-      <div class="text-[11px] text-slate-500 text-center mt-2 flex items-center justify-center space-x-2">
-        <span>Kontrak Anti-Halusinasi Aktif</span>
-        <span>&bull;</span>
-        <span>DPA Virtual Advisory</span>
-        <span>&bull;</span>
-        <span>UII-Bench-50</span>
+
+        <!-- Input Box -->
+        <form id="chatForm" onsubmit="handleSubmit(event)" class="relative rounded-2xl bg-[#0e1014] border border-white/[0.09] focus-within:border-white/30 transition shadow-xl">
+          <!-- Hidden Student File Input -->
+          <input type="file" id="studentFileInput" class="hidden" accept=".pdf,.txt,.csv,.md,.png,.jpg" onchange="uploadStudentDoc(this.files[0])" />
+
+          <div class="flex items-center px-3 py-2">
+            <!-- Paperclip Upload Button -->
+            <button 
+              type="button" 
+              onclick="document.getElementById('studentFileInput').click()" 
+              title="Unggah berkas KRS, KHS, atau Transkrip Nilai (PDF/TXT)"
+              class="p-2 text-zinc-500 hover:text-zinc-200 rounded-xl hover:bg-white/[0.04] transition shrink-0"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+              </svg>
+            </button>
+
+            <!-- Text Input -->
+            <input 
+              id="queryInput"
+              type="text" 
+              placeholder="Tanyakan regulasi atau konsultasikan KRS/KHS Anda..."
+              class="flex-1 bg-transparent px-3 py-2 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 outline-none"
+              autocomplete="off"
+            />
+
+            <!-- Send Button -->
+            <button 
+              id="submitBtn"
+              type="submit"
+              class="p-2 rounded-xl bg-white text-black hover:bg-zinc-200 transition disabled:opacity-30 disabled:hover:bg-white shadow-sm shrink-0"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </form>
+
+        <!-- Micro Footer Metadata -->
+        <div class="flex items-center justify-between text-[10px] mono text-zinc-500 px-2 pt-2">
+          <div class="flex items-center space-x-2">
+            <span>Kontrak Anti-Halusinasi Aktif</span>
+            <span>&bull;</span>
+            <span>Sitasi Wajib Terverifikasi</span>
+          </div>
+          <div>
+            <span>Enter untuk kirim</span>
+          </div>
+        </div>
+
       </div>
     </div>
 
   </main>
 
   <!-- Admin Regulation Upload Modal -->
-  <div id="regulationModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="font-bold text-white text-base">Tambah Dokumen Regulasi Kampus (PDF)</h3>
-        <button onclick="closeRegulationModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">✕</button>
+  <div id="regulationModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="card-sheen rounded-3xl bg-[#0c0d10] border border-white/[0.09] max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+        <h3 class="text-sm font-semibold text-white">Tambah Dokumen Regulasi Resmi (PDF)</h3>
+        <button onclick="closeRegulationModal()" class="text-zinc-500 hover:text-white p-1 rounded-lg">✕</button>
       </div>
 
-      <p class="text-xs text-slate-400">
-        Dokumen PDF yang diunggah akan otomatis disimpan ke <strong>Supabase Storage</strong>, dibersihkan via <strong>Jina Reader</strong>, dihitung vektornya via <strong>Cohere 1024-dim</strong>, dan disimpan permanen ke <strong>Pinecone</strong>.
+      <p class="text-xs text-zinc-400 leading-relaxed">
+        Dokumen PDF akan diekstrak via <strong>AURA Document Parser</strong>, dihitung vektornya via <strong>Native High-Dimensional Embedding</strong>, dan disimpan ke index <strong>AURA Vector Space</strong>.
       </p>
 
-      <form id="regulationForm" onsubmit="handleRegulationUpload(event)" class="space-y-4">
+      <form id="regulationForm" onsubmit="handleRegulationUpload(event)" class="space-y-4 pt-1">
         <div>
-          <label class="block text-xs text-slate-300 mb-1 font-medium">Judul Dokumen Resmi</label>
-          <input id="regTitle" type="text" required placeholder="Cth: Panduan Kurikulum 2024 Informatika FTI" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500" />
+          <label class="block text-[11px] mono uppercase text-zinc-400 mb-1.5 font-medium">Judul Dokumen Resmi</label>
+          <input id="regTitle" type="text" required placeholder="Cth: Buku Pedoman Akademik FTI UII 2024" class="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white/30" />
         </div>
 
         <div>
-          <label class="block text-xs text-slate-300 mb-1 font-medium">Pilih Berkas Dokumen (PDF/TXT)</label>
-          <input id="regFile" type="file" required accept=".pdf,.txt,.md" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-sky-600 file:text-white hover:file:bg-sky-500 cursor-pointer" />
+          <label class="block text-[11px] mono uppercase text-zinc-400 mb-1.5 font-medium">Kunci Otorisasi Admin (Wajib)</label>
+          <input id="regAdminKey" type="password" required placeholder="Masukkan kunci admin pengelola regulasi" class="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-white/30 mono" />
         </div>
 
-        <div id="regProgress" class="hidden text-xs text-sky-400 flex items-center space-x-2">
-          <span class="animate-spin inline-block">⚙️</span>
-          <span id="regProgressText">Sedang mengunggah dan mengindeks ke Pinecone...</span>
+        <div>
+          <label class="block text-[11px] mono uppercase text-zinc-400 mb-1.5 font-medium">Pilih Berkas PDF</label>
+          <input id="regFile" type="file" required accept=".pdf,.txt,.md" class="w-full text-xs text-zinc-400 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border file:border-white/[0.1] file:text-xs file:font-medium file:bg-white/[0.05] file:text-zinc-200 hover:file:bg-white/[0.1] cursor-pointer" />
         </div>
 
-        <div class="flex justify-end space-x-2 pt-2 border-t border-slate-800">
-          <button type="button" onclick="closeRegulationModal()" class="px-4 py-2 rounded-xl text-xs text-slate-400 hover:bg-slate-800 transition">Batal</button>
-          <button id="regSubmitBtn" type="submit" class="px-4 py-2 rounded-xl text-xs bg-sky-600 hover:bg-sky-500 text-white font-medium transition shadow-md">Unggah &amp; Indeks Vektor</button>
+        <div id="regProgress" class="hidden text-xs text-zinc-300 flex items-center space-x-2 p-2 rounded-lg bg-white/[0.04]">
+          <span class="animate-spin inline-block mono">◌</span>
+          <span id="regProgressText">Sedang mengekstrak dan mengindeks ke basis pengetahuan...</span>
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-2 border-t border-white/[0.06]">
+          <button type="button" onclick="closeRegulationModal()" class="px-4 py-2 rounded-xl text-xs text-zinc-400 hover:text-white transition">Batal</button>
+          <button id="regSubmitBtn" type="submit" class="px-4 py-2 rounded-xl text-xs bg-white text-black font-medium hover:bg-zinc-200 transition shadow-sm">Unggah & Indeks Vektor</button>
         </div>
       </form>
     </div>
@@ -213,11 +417,277 @@
 
   <script>
     const messagesContainer = document.getElementById('messagesContainer');
+    const welcomeScreen = document.getElementById('welcomeScreen');
     const queryInput = document.getElementById('queryInput');
     const submitBtn = document.getElementById('submitBtn');
 
-    // Current attached student document
     let currentAttachedDoc = null;
+    let currentSessionId = null;
+    let supabaseClient = null;
+
+    function generateUUID() {
+      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    function initSupabase() {
+      if (supabaseClient) return;
+      const conf = document.getElementById("supabase-config");
+      const url = conf ? conf.dataset.url : "";
+      const key = conf ? conf.dataset.key : "";
+      if (window.supabase && url && key) {
+        supabaseClient = window.supabase.createClient(url, key);
+      }
+    }
+
+    function getCurrentUser() {
+      try {
+        const stored = localStorage.getItem("aura_user");
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+      return null;
+    }
+
+    function getUserKey() {
+      const u = getCurrentUser();
+      if (u && u.id) return u.id;
+      if (u && u.email) return u.email.toLowerCase().replace(/[^a-z0-9]/g, '_');
+      return 'guest';
+    }
+
+    function getSessions() {
+      try {
+        const data = localStorage.getItem('aura_sessions_' + getUserKey());
+        return data ? JSON.parse(data) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveSessions(sessions) {
+      try {
+        localStorage.setItem('aura_sessions_' + getUserKey(), JSON.stringify(sessions));
+      } catch (e) {}
+    }
+
+    function renderSessionsList() {
+      const listElem = document.getElementById('sessionsList');
+      const badgeElem = document.getElementById('sessionCountBadge');
+      if (!listElem) return;
+
+      const sessions = getSessions();
+      if (badgeElem) badgeElem.innerText = sessions.length;
+
+      if (sessions.length === 0) {
+        listElem.innerHTML = '<div class="text-[11px] text-zinc-600 px-2 py-1 italic">Belum ada riwayat</div>';
+        return;
+      }
+
+      listElem.innerHTML = sessions.map(s => {
+        const isActive = s.id === currentSessionId;
+        return `
+          <div onclick="switchSession('${s.id}')" 
+               class="w-full text-left px-2.5 py-2 rounded-xl text-xs transition flex items-center justify-between group cursor-pointer ${isActive ? 'bg-white/[0.08] text-white border border-white/[0.1]' : 'text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent'}">
+            <div class="flex items-center space-x-2 truncate flex-1 min-w-0">
+              <svg class="w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-zinc-500 group-hover:text-zinc-300'} shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+              <span class="truncate font-medium">${escapeHtml(s.title || 'Percakapan')}</span>
+            </div>
+            <button onclick="deleteSession('${s.id}', event)" title="Hapus Sesi" 
+                    class="opacity-0 group-hover:opacity-100 p-1 hover:text-rose-400 text-zinc-500 transition rounded ml-1">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function syncCloudSessions() {
+      initSupabase();
+      let u = getCurrentUser();
+
+      if (supabaseClient && (!u || !u.id)) {
+        try {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session && session.user) {
+            u = {
+              id: session.user.id,
+              email: session.user.email,
+              name: session.user.user_metadata?.full_name || session.user.email?.split("@")[0]
+            };
+            localStorage.setItem("aura_user", JSON.stringify(u));
+            if (u.name) document.getElementById("userName").innerText = u.name;
+            if (u.email) document.getElementById("userEmail").innerText = u.email;
+            if (u.name) document.getElementById("userAvatar").innerText = u.name.charAt(0).toUpperCase();
+          }
+        } catch (e) {}
+      }
+
+      renderSessionsList();
+
+      if (!supabaseClient || !u || !u.id) return;
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('chat_sessions')
+          .select('id, title, created_at')
+          .eq('user_id', u.id)
+          .order('created_at', { ascending: false });
+
+        if (!error && data) {
+          let localSessions = getSessions();
+          const localMap = new Map(localSessions.map(s => [s.id, s]));
+
+          for (const cloudS of data) {
+            if (localMap.has(cloudS.id)) {
+              localMap.get(cloudS.id).title = cloudS.title;
+            } else {
+              localMap.set(cloudS.id, {
+                id: cloudS.id,
+                title: cloudS.title,
+                createdAt: new Date(cloudS.created_at).getTime(),
+                messages: []
+              });
+            }
+          }
+
+          const merged = Array.from(localMap.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+          saveSessions(merged);
+          renderSessionsList();
+        }
+      } catch (err) {
+        console.warn("Cloud session sync warning:", err);
+      }
+    }
+
+    async function switchSession(sessionId) {
+      currentSessionId = sessionId;
+      let sessions = getSessions();
+      let session = sessions.find(s => s.id === sessionId);
+      if (!session) return;
+
+      messagesContainer.innerHTML = '';
+      removeAttachedFile();
+
+      // If local messages are empty and supabase is available, fetch messages from cloud
+      if ((!session.messages || session.messages.length === 0) && supabaseClient) {
+        const u = getCurrentUser();
+        if (u && u.id) {
+          try {
+            const { data, error } = await supabaseClient
+              .from('chat_messages')
+              .select('role, content, created_at')
+              .eq('session_id', sessionId)
+              .eq('user_id', u.id)
+              .order('created_at', { ascending: true });
+
+            if (!error && data && data.length > 0) {
+              session.messages = data.map(m => ({
+                role: m.role,
+                text: m.content,
+                timestamp: new Date(m.created_at).getTime()
+              }));
+              saveSessions(sessions);
+            }
+          } catch (e) {}
+        }
+      }
+
+      if (!session.messages || session.messages.length === 0) {
+        if (welcomeScreen) messagesContainer.appendChild(welcomeScreen);
+        renderSessionsList();
+        return;
+      }
+
+      for (const msg of session.messages) {
+        if (msg.role === 'user') {
+          appendUserMessage(msg.text, msg.attachedFile);
+        } else if (msg.role === 'assistant') {
+          const node = createAssistantMessageNode();
+          messagesContainer.appendChild(node);
+          const contentElem = node.querySelector('.msg-content');
+          const sourcesContainer = node.querySelector('.sources-container');
+          const metricsElem = node.querySelector('.metrics-container');
+
+          const rawHtml = marked.parse(msg.text || '');
+          contentElem.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : rawHtml;
+
+          if (msg.sources && msg.sources.length > 0) {
+            renderSources(sourcesContainer, msg.sources);
+          }
+          if (msg.metrics) {
+            renderMetrics(metricsElem, msg.metrics);
+          }
+        }
+      }
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      renderSessionsList();
+    }
+
+    async function deleteSession(sessionId, event) {
+      if (event) event.stopPropagation();
+      const u = getCurrentUser();
+      if (supabaseClient && u && u.id) {
+        try {
+          await supabaseClient.from('chat_sessions').delete().eq('id', sessionId).eq('user_id', u.id);
+        } catch (e) {}
+      }
+      let sessions = getSessions();
+      sessions = sessions.filter(s => s.id !== sessionId);
+      saveSessions(sessions);
+      if (currentSessionId === sessionId) {
+        startNewChat();
+      } else {
+        renderSessionsList();
+      }
+    }
+
+    // Load User info & sync sessions on startup
+    document.addEventListener("DOMContentLoaded", () => {
+      try {
+        const stored = localStorage.getItem("aura_user");
+        if (stored) {
+          const user = JSON.parse(stored);
+          if (user.name) document.getElementById("userName").innerText = user.name;
+          if (user.email) document.getElementById("userEmail").innerText = user.email;
+          if (user.name) document.getElementById("userAvatar").innerText = user.name.charAt(0).toUpperCase();
+        }
+      } catch (e) {}
+
+      syncCloudSessions();
+    });
+
+    // ⌘K Shortcut for New Chat
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        startNewChat();
+      }
+    });
+
+    function handleLogout() {
+      if (supabaseClient) {
+        try { supabaseClient.auth.signOut(); } catch (e) {}
+      }
+      localStorage.removeItem("aura_user");
+      window.location.href = "/login";
+    }
+
+    function startNewChat() {
+      currentSessionId = null;
+      messagesContainer.innerHTML = '';
+      if (welcomeScreen) {
+        messagesContainer.appendChild(welcomeScreen);
+      }
+      removeAttachedFile();
+      queryInput.value = '';
+      queryInput.focus();
+      renderSessionsList();
+    }
 
     function sendPrompt(text) {
       queryInput.value = text;
@@ -237,8 +707,8 @@
       const attachedFileName = document.getElementById('attachedFileName');
       const attachedFileSummary = document.getElementById('attachedFileSummary');
 
-      attachedFileName.innerText = 'Mengunggah & menganalisis ' + file.name + '...';
-      attachedFileSummary.innerText = 'Menjalankan ekstraksi berkas via Supabase...';
+      attachedFileName.innerText = 'Mengunggah ' + file.name + '...';
+      attachedFileSummary.innerText = 'Mengekstrak dan menganalisis berkas studi...';
       attachedFileCard.classList.remove('hidden');
 
       try {
@@ -260,7 +730,7 @@
         };
 
         attachedFileName.innerText = result.fileName;
-        attachedFileSummary.innerText = result.summary || 'Berkas akademik terlampir';
+        attachedFileSummary.innerText = result.summary || 'Berkas akademik terlampir siap dianalisis';
       } catch (err) {
         alert('Gagal mengunggah berkas: ' + err.message);
         removeAttachedFile();
@@ -288,6 +758,7 @@
     async function handleRegulationUpload(e) {
       e.preventDefault();
       const title = document.getElementById('regTitle').value;
+      const adminKey = document.getElementById('regAdminKey').value.trim();
       const fileInput = document.getElementById('regFile');
       const file = fileInput.files[0];
       if (!file) return;
@@ -296,6 +767,7 @@
       formData.append('file', file);
       formData.append('title', title);
       formData.append('type', 'regulation');
+      formData.append('adminKey', adminKey);
 
       const regProgress = document.getElementById('regProgress');
       const regSubmitBtn = document.getElementById('regSubmitBtn');
@@ -305,13 +777,16 @@
       try {
         const resp = await fetch('/api/upload', {
           method: 'POST',
+          headers: {
+            'X-Admin-Key': adminKey
+          },
           body: formData
         });
         const res = await resp.json();
         if (!resp.ok || !res.success) {
           throw new Error(res.message || 'Gagal mengunggah regulasi');
         }
-        alert('✅ ' + res.message);
+        alert('Sukses: ' + res.message);
         closeRegulationModal();
       } catch (err) {
         alert('Error: ' + err.message);
@@ -326,10 +801,79 @@
       const query = queryInput.value.trim();
       if (!query) return;
 
+      // Hide welcome screen if present
+      if (welcomeScreen && welcomeScreen.parentNode === messagesContainer) {
+        messagesContainer.removeChild(welcomeScreen);
+      }
+
       // Disable input during request
       queryInput.value = '';
       queryInput.disabled = true;
       submitBtn.disabled = true;
+
+      // Ensure active session exists in storage
+      let sessions = getSessions();
+      let activeSession = null;
+      const u = getCurrentUser();
+
+      if (!currentSessionId) {
+        currentSessionId = generateUUID();
+        const cleanTitle = query.length > 36 ? query.substring(0, 36) + '...' : query;
+        activeSession = {
+          id: currentSessionId,
+          title: cleanTitle,
+          createdAt: Date.now(),
+          messages: []
+        };
+        sessions.unshift(activeSession);
+
+        if (supabaseClient && u && u.id) {
+          supabaseClient.from('chat_sessions').upsert({
+            id: currentSessionId,
+            user_id: u.id,
+            title: cleanTitle
+          }).then(() => {});
+        }
+      } else {
+        activeSession = sessions.find(s => s.id === currentSessionId);
+        if (!activeSession) {
+          const cleanTitle = query.length > 36 ? query.substring(0, 36) + '...' : query;
+          activeSession = {
+            id: currentSessionId,
+            title: cleanTitle,
+            createdAt: Date.now(),
+            messages: []
+          };
+          sessions.unshift(activeSession);
+
+          if (supabaseClient && u && u.id) {
+            supabaseClient.from('chat_sessions').upsert({
+              id: currentSessionId,
+              user_id: u.id,
+              title: cleanTitle
+            }).then(() => {});
+          }
+        }
+      }
+
+      // Record User Message
+      activeSession.messages.push({
+        role: 'user',
+        text: query,
+        attachedFile: currentAttachedDoc ? currentAttachedDoc.fileName : null,
+        timestamp: Date.now()
+      });
+      saveSessions(sessions);
+      renderSessionsList();
+
+      if (supabaseClient && u && u.id) {
+        supabaseClient.from('chat_messages').insert({
+          session_id: currentSessionId,
+          user_id: u.id,
+          role: 'user',
+          content: query
+        }).then(() => {});
+      }
 
       // 1. Render User Message Bubble
       appendUserMessage(query, currentAttachedDoc ? currentAttachedDoc.fileName : null);
@@ -346,10 +890,12 @@
       contentElem.classList.add('typing-cursor');
 
       let fullAnswer = '';
+      let currentSources = [];
+      let currentMetrics = null;
 
       const payload = {
         query: query,
-        sessionId: 'session-' + Date.now()
+        sessionId: currentSessionId
       };
 
       if (currentAttachedDoc) {
@@ -402,35 +948,60 @@
               try {
                 const tokenObj = JSON.parse(dataStr);
                 fullAnswer += tokenObj.token;
-                contentElem.innerHTML = marked.parse(fullAnswer);
+                const rawHtml = marked.parse(fullAnswer);
+                contentElem.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : rawHtml;
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
               } catch (err) {}
             } else if (eventType === 'sources') {
               try {
                 const sources = JSON.parse(dataStr);
+                currentSources = sources;
                 renderSources(sourcesContainer, sources);
               } catch (err) {}
             } else if (eventType === 'metrics') {
               try {
                 const metrics = JSON.parse(dataStr);
+                currentMetrics = metrics;
                 renderMetrics(metricsElem, metrics);
               } catch (err) {}
             } else if (eventType === 'error') {
               try {
                 const errObj = JSON.parse(dataStr);
-                contentElem.innerHTML += `<div class="p-3 my-2 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs">⚠️ ${errObj.error}</div>`;
+                contentElem.innerHTML += `<div class="p-3 my-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">⚠️ ${errObj.error}</div>`;
               } catch (err) {}
             }
           }
         }
       } catch (err) {
-        contentElem.innerHTML = `<div class="p-3 my-2 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs">Gagal terhubung ke engine: ${err.message}</div>`;
+        contentElem.innerHTML = `<div class="p-3 my-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">Gagal terhubung ke engine AURA: ${err.message}</div>`;
       } finally {
         contentElem.classList.remove('typing-cursor');
         queryInput.disabled = false;
         submitBtn.disabled = false;
         queryInput.focus();
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        // Save assistant answer to session
+        if (fullAnswer && activeSession) {
+          activeSession.messages.push({
+            role: 'assistant',
+            text: fullAnswer,
+            sources: currentSources,
+            metrics: currentMetrics,
+            timestamp: Date.now()
+          });
+          saveSessions(sessions);
+          renderSessionsList();
+
+          if (supabaseClient && u && u.id) {
+            supabaseClient.from('chat_messages').insert({
+              session_id: currentSessionId,
+              user_id: u.id,
+              role: 'assistant',
+              content: fullAnswer
+            }).then(() => {});
+          }
+        }
       }
     }
 
@@ -439,12 +1010,13 @@
       userDiv.className = 'flex justify-end';
       let fileBadge = '';
       if (attachedFile) {
-        fileBadge = `<div class="mb-1.5 flex items-center space-x-1 text-[11px] bg-sky-950/80 px-2 py-0.5 rounded-md border border-sky-800/60 w-fit text-sky-200">
-          <span>📎</span><span class="truncate">${escapeHtml(attachedFile)}</span>
+        fileBadge = `<div class="mb-2 flex items-center space-x-1.5 text-[11px] mono bg-white/[0.04] px-2.5 py-1 rounded-md border border-white/[0.08] w-fit text-zinc-300">
+          <svg class="w-3 h-3 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+          <span class="truncate">${escapeHtml(attachedFile)}</span>
         </div>`;
       }
       userDiv.innerHTML = `
-        <div class="bg-gradient-to-r from-sky-600 to-indigo-600 text-white rounded-2xl rounded-tr-sm px-5 py-3.5 max-w-xl text-sm shadow-md">
+        <div class="bg-[#121418] border border-white/[0.08] text-zinc-200 rounded-2xl rounded-tr-xs px-4 sm:px-5 py-3.5 max-w-xl text-xs sm:text-sm shadow-md leading-relaxed">
           ${fileBadge}
           ${escapeHtml(text)}
         </div>
@@ -456,18 +1028,18 @@
       const wrapper = document.createElement('div');
       wrapper.className = 'flex items-start space-x-3 max-w-3xl';
       wrapper.innerHTML = `
-        <div class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-sky-400 shrink-0 mt-1">
-          A
+        <div class="w-7 h-7 rounded-lg bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-white text-xs mono font-bold shrink-0 mt-0.5">
+          AU
         </div>
-        <div class="flex-1 bg-slate-900 border border-slate-800 rounded-2xl rounded-tl-sm p-5 shadow-lg space-y-3">
+        <div class="flex-1 space-y-2.5">
           <!-- Sources Badge Container -->
           <div class="sources-container flex flex-wrap gap-1.5"></div>
           <!-- Text Body -->
-          <div class="msg-content prose prose-invert prose-sm max-w-none leading-relaxed text-slate-200">
-            <span class="text-slate-400 text-xs italic">Menghubungkan data mahasiswa dengan regulasi resmi UII...</span>
+          <div class="msg-content prose prose-invert prose-sm max-w-none text-zinc-200 text-xs sm:text-sm bg-white/[0.01] border border-white/[0.04] p-4 sm:p-5 rounded-2xl">
+            <span class="text-zinc-500 text-xs italic">Menghubungkan data dengan dokumen regulasi resmi UII...</span>
           </div>
           <!-- Latency Metrics Container -->
-          <div class="metrics-container pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500"></div>
+          <div class="metrics-container text-[10px] mono text-zinc-500 px-1"></div>
         </div>
       `;
       return wrapper;
@@ -476,24 +1048,26 @@
     function renderSources(container, sources) {
       if (!sources || sources.length === 0) return;
       container.innerHTML = sources.map(s => `
-        <span title="${escapeHtml(s.excerpt)}" class="cursor-pointer inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-sky-950/60 border border-sky-800/40 text-sky-300 text-[11px] hover:bg-sky-900/60 transition">
-          <span>📄</span>
+        <span title="${escapeHtml(s.excerpt)}" class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/[0.08] text-zinc-300 text-[11px] mono hover:bg-white/[0.06] transition cursor-pointer">
+          <svg class="w-3 h-3 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
           <span class="font-medium">${escapeHtml(s.fileName || s.title)}</span>
-          <span class="text-sky-500/80">(${(s.score * 100).toFixed(0)}%)</span>
+          <span class="text-emerald-400 font-semibold">${(s.score * 100).toFixed(0)}%</span>
         </span>
       `).join('');
     }
 
     function renderMetrics(container, m) {
       container.innerHTML = `
-        <div class="flex items-center space-x-2">
-          <span>ANN: <strong class="text-slate-400">${m.denseANNMs}ms</strong></span>
+        <div class="flex flex-wrap items-center gap-2">
+          <span>Embedding: <strong>${m.embeddingMs || 0}ms</strong></span>
           <span>&bull;</span>
-          <span>Rerank: <strong class="text-slate-400">${m.rerankMs}ms</strong></span>
+          <span>ANN: <strong>${m.denseANNMs}ms</strong></span>
           <span>&bull;</span>
-          <span>Gen: <strong class="text-slate-400">${m.generationMs}ms</strong></span>
+          <span>Rerank: <strong>${m.rerankMs}ms</strong></span>
+          <span>&bull;</span>
+          <span>Gen: <strong>${m.generationMs}ms</strong></span>
+          <span class="text-emerald-400">&bull; Total: <strong>${(m.totalMs / 1000).toFixed(2)}s</strong></span>
         </div>
-        <div>Total: <strong class="text-emerald-400">${(m.totalMs / 1000).toFixed(2)}s</strong></div>
       `;
     }
 
@@ -503,6 +1077,19 @@
       div.innerText = text;
       return div.innerHTML;
     }
+
+    // Check for query parameter ?q= on load (e.g. redirected from FAQ)
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryParam = urlParams.get('q');
+      if (queryParam) {
+        const queryInput = document.getElementById('queryInput');
+        if (queryInput) {
+          queryInput.value = queryParam;
+          queryInput.focus();
+        }
+      }
+    });
   </script>
 </body>
 </html>

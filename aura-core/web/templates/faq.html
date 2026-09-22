@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="id" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ Regulasi Akademik — AURA FTI UII</title>
+  <meta name="description" content="Pusat Tanya Jawab Regulasi Akademik Resmi FTI UII: Prasyarat Sempro, Beban SKS, Masa Studi, Batas Turnitin, Yudisium, dan DPA Virtual.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #08090a;
+      --border-subtle: rgba(255, 255, 255, 0.07);
+      --border-medium: rgba(255, 255, 255, 0.14);
+      --surface-card: #0e1013;
+      --surface-card-hover: #13161b;
+      --accent-glow: rgba(94, 106, 210, 0.15);
+    }
+    body {
+      background-color: var(--bg-canvas);
+      color: #e4e4e7;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.015em;
+      overflow-x: hidden;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    
+    .nav-glass {
+      background: rgba(8, 9, 10, 0.82);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .luxury-border {
+      border: 1px solid var(--border-subtle);
+    }
+    .luxury-border-hover:hover {
+      border-color: var(--border-medium);
+      background-color: var(--surface-card-hover);
+    }
+
+    /* Accordion animation transition */
+    .faq-content {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    }
+    .faq-item.active .faq-content {
+      max-height: 500px;
+      opacity: 1;
+    }
+    .faq-item.active .faq-chevron {
+      transform: rotate(180deg);
+    }
+    .faq-chevron {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Ambient spotlight */
+    .ambient-spotlight {
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 480px;
+      background: radial-gradient(circle, rgba(120, 119, 198, 0.10) 0%, rgba(94, 106, 210, 0.04) 40%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body class="min-h-screen relative selection:bg-zinc-800 selection:text-white flex flex-col">
+
+  <div class="ambient-spotlight"></div>
+
+  <!-- Header / Navigation -->
+  <header class="nav-glass sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-8">
+        <a href="/" class="flex items-center space-x-2.5 group">
+          <div class="w-8 h-8 rounded-lg bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-white font-semibold text-xs tracking-tight group-hover:bg-white/[0.1] transition">
+            AU
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="font-semibold text-white tracking-tight text-sm">AURA</span>
+            <span class="text-[11px] mono text-zinc-500 font-medium">UII</span>
+          </div>
+        </a>
+
+        <nav class="hidden md:flex items-center space-x-6 text-xs text-zinc-400 font-medium">
+          <a href="/" class="hover:text-white transition">Beranda</a>
+          <a href="/#arsitektur" class="hover:text-white transition">Arsitektur RAG</a>
+          <a href="/#dpa-virtual" class="hover:text-white transition">DPA Virtual</a>
+          <a href="/#benchmark" class="hover:text-white transition">UII-Bench-50</a>
+          <a href="/faq" class="text-white font-medium">FAQ Regulasi</a>
+        </nav>
+      </div>
+
+      <div class="flex items-center space-x-3 text-xs">
+        <a href="/login" class="px-3.5 py-1.5 text-zinc-400 hover:text-white transition font-medium">
+          Masuk
+        </a>
+        <a href="/chat" class="px-4 py-1.5 rounded-lg bg-white text-zinc-950 font-semibold hover:bg-zinc-200 transition shadow-sm flex items-center space-x-1.5">
+          <span>Buka Chat</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="flex-grow max-w-4xl mx-auto px-6 pt-16 pb-24 relative z-10 w-full">
+    
+    <!-- Hero Header -->
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/[0.1] text-[11px] mono text-zinc-300 mb-5">
+        <span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+        <span>FTI UII ACADEMIC KNOWLEDGE BASE</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4 leading-tight">
+        Frequently Asked Questions
+      </h1>
+      <p class="text-sm sm:text-base text-zinc-400 leading-relaxed">
+        Pusat informasi dan jawaban atas pertanyaan regulasi akademik yang paling sering diajukan di Fakultas Teknologi Industri UII, dirujuk langsung dari dokumen pedoman resmi.
+      </p>
+
+      <!-- Instant Search Input -->
+      <div class="mt-8 relative max-w-xl mx-auto">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+        <input 
+          type="text" 
+          id="searchInput" 
+          oninput="handleSearch()"
+          placeholder="Cari pertanyaan, kata kunci (misal: SKS, sempro, nilai E, turnitin, yudisium)..." 
+          class="w-full pl-10 pr-12 py-3 bg-[#0e1013] border border-white/[0.1] rounded-xl text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/[0.25] transition shadow-inner"
+        >
+        <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none">
+          <span class="text-[10px] mono text-zinc-500 bg-white/[0.06] border border-white/[0.08] px-1.5 py-0.5 rounded">⌘K</span>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="flex flex-wrap items-center justify-center gap-2 mt-6" id="categoryFilter">
+        <button onclick="filterCategory('all')" data-cat="all" class="cat-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-white text-zinc-950 transition">
+          Semua (10)
+        </button>
+        <button onclick="filterCategory('sempro')" data-cat="sempro" class="cat-pill px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 bg-white/[0.03] border border-white/[0.08] hover:text-white transition">
+          Prasyarat Sempro
+        </button>
+        <button onclick="filterCategory('sks')" data-cat="sks" class="cat-pill px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 bg-white/[0.03] border border-white/[0.08] hover:text-white transition">
+          Beban SKS & IPS
+        </button>
+        <button onclick="filterCategory('dospem')" data-cat="dospem" class="cat-pill px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 bg-white/[0.03] border border-white/[0.08] hover:text-white transition">
+          Masa SK & Dospem
+        </button>
+        <button onclick="filterCategory('turnitin')" data-cat="turnitin" class="cat-pill px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 bg-white/[0.03] border border-white/[0.08] hover:text-white transition">
+          Turnitin & Plagiarisme
+        </button>
+        <button onclick="filterCategory('yudisium')" data-cat="yudisium" class="cat-pill px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 bg-white/[0.03] border border-white/[0.08] hover:text-white transition">
+          Yudisium & Kelulusan
+        </button>
+        <button onclick="filterCategory('audit')" data-cat="audit" class="cat-pill px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 bg-white/[0.03] border border-white/[0.08] hover:text-white transition">
+          Audit KHS / DPA
+        </button>
+      </div>
+    </div>
+
+    <!-- FAQ Accordion List -->
+    <div class="space-y-3" id="faqList">
+
+      <!-- ITEM 1: SKS Sempro -->
+      <div class="faq-item luxury-border rounded-xl bg-[#0e1013] overflow-hidden transition" data-category="sempro">
+        <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-start justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex items-center space-x-2">
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-medium">Prasyarat Sempro</span>
+              <span class="text-[10px] mono text-zinc-500">Pasal 2 Pedoman FTI</span>
+            </div>
+            <h3 class="text-sm font-semibold text-white tracking-tight">
+              Berapa minimal SKS yang harus sudah lulus untuk mendaftar Seminar Proposal Skripsi di FTI UII?
+            </h3>
+          </div>
+          <div class="faq-chevron text-zinc-500 mt-1 shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+        </button>
+        <div class="faq-content px-5 border-t border-white/[0.04]">
+          <div class="py-4 text-xs text-zinc-300 leading-relaxed space-y-2.5">
+            <p>
+              Berdasarkan <strong>Pasal 2 Buku Pedoman Pelaksanaan Tugas Akhir & Skripsi FTI UII</strong>, mahasiswa wajib telah menyelesaikan beban studi minimal <strong>110 SKS (Satuan Kredit Semester)</strong> yang telah dinyatakan <strong>lulus</strong>.
+            </p>
+            <p class="text-zinc-400">
+              Syarat ini bersifat kumulatif bersama dengan syarat IPK minimal 2.00, tidak memiliki nilai E dalam transkrip resmi, telah lulus Metodologi Penelitian minimal C, serta draf proposal telah ditandatangani oleh Dosen Pembimbing Skripsi.
+            </p>
+            <div class="pt-2 flex items-center justify-between">
+              <span class="text-[10px] mono text-zinc-500">Rujukan: Pedoman_Skripsi_FTI_UII_2024.pdf</span>
+              <a href="/chat?q=Berapa%20minimal%20SKS%20yang%20harus%20sudah%20lulus%20untuk%20mendaftar%20seminar%20proposal%20skripsi%20di%20FTI%20UII%3F" class="inline-flex items-center space-x-1 text-[11px] font-medium text-white hover:underline">
+                <span>Tanyakan di Chat</span>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM 2: Nilai E Sempro -->
+      <div class="faq-item luxury-border rounded-xl bg-[#0e1013] overflow-hidden transition" data-category="sempro">
+        <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-start justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex items-center space-x-2">
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-medium">Prasyarat Sempro</span>
+              <span class="text-[10px] mono text-zinc-500">Pasal 2 Ayat 2</span>
+            </div>
+            <h3 class="text-sm font-semibold text-white tracking-tight">
+              Saya pernah mendapat nilai E di semester lalu tapi sudah diulang dan mendapat A. Apakah saya masih bisa daftar Sempro?
+            </h3>
+          </div>
+          <div class="faq-chevron text-zinc-500 mt-1 shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+        </button>
+        <div class="faq-content px-5 border-t border-white/[0.04]">
+          <div class="py-4 text-xs text-zinc-300 leading-relaxed space-y-2.5">
+            <p>
+              Merujuk pada frasa klausul resmi: <em>"Tidak memiliki nilai E pada mata kuliah yang telah ditempuh dalam transkrip nilai resmi"</em> [Pedoman FTI, Pasal 2 Ayat 2].
+            </p>
+            <p class="text-zinc-400">
+              Jika nilai E tersebut telah Anda perbaiki dan sistem informasi akademik telah menggantikannya dengan nilai kelulusan baru (A) sehingga nilai E tidak lagi tercantum dalam transkrip aktif Anda, maka Anda secara prinsip <strong>memenuhi syarat</strong>. Namun, pastikan dengan memeriksa dokumen transkrip resmi terbaru Anda.
+            </p>
+            <div class="pt-2 flex items-center justify-between">
+              <span class="text-[10px] mono text-zinc-500">Rujukan: Pedoman_Skripsi_FTI_UII_2024.pdf</span>
+              <a href="/chat?q=Saya%20pernah%20dapat%20satu%20nilai%20E%20tapi%20sudah%20diulang%20dapat%20A.%20Apakah%20bisa%20daftar%20sempro%3F" class="inline-flex items-center space-x-1 text-[11px] font-medium text-white hover:underline">
+                <span>Tanyakan di Chat</span>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM 3: Metopen D -->
+      <div class="faq-item luxury-border rounded-xl bg-[#0e1013] overflow-hidden transition" data-category="sempro">
+        <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-start justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex items-center space-x-2">
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-medium">Prasyarat Sempro</span>
+              <span class="text-[10px] mono text-zinc-500">Pasal 2 Ayat 4</span>
+            </div>
+            <h3 class="text-sm font-semibold text-white tracking-tight">
+              Apakah nilai D pada mata kuliah Metodologi Penelitian cukup untuk mendaftar Sempro?
+            </h3>
+          </div>
+          <div class="faq-chevron text-zinc-500 mt-1 shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+        </button>
+        <div class="faq-content px-5 border-t border-white/[0.04]">
+          <div class="py-4 text-xs text-zinc-300 leading-relaxed space-y-2.5">
+            <p>
+              <strong>Tidak cukup.</strong> Regulasi akademik Pasal 2 Ayat 4 secara tegas menyatakan bahwa mahasiswa wajib <em>"Telah lulus mata kuliah Metodologi Penelitian dengan nilai minimal C"</em>.
+            </p>
+            <p class="text-zinc-400">
+              Mahasiswa yang memperoleh nilai D pada Metodologi Penelitian harus mengulang dan memperbaiki nilai mata kuliah tersebut sekurang-kurangnya menjadi C sebelum berhak mendaftar seminar proposal.
+            </p>
+            <div class="pt-2 flex items-center justify-between">
+              <span class="text-[10px] mono text-zinc-500">Rujukan: Pedoman_Skripsi_FTI_UII_2024.pdf</span>
+              <a href="/chat?q=Saya%20sudah%20lulus%20Metodologi%20Penelitian%20dengan%20nilai%20D.%20Apakah%20cukup%20untuk%20syarat%20sempro%3F" class="inline-flex items-center space-x-1 text-[11px] font-medium text-white hover:underline">
+                <span>Tanyakan di Chat</span>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM 4: Beban SKS Semester -->
+      <div class="faq-item luxury-border rounded-xl bg-[#0e1013] overflow-hidden transition" data-category="sks">
+        <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-start justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex items-center space-x-2">
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-medium">Beban SKS & IPS</span>
+              <span class="text-[10px] mono text-zinc-500">Pasal 10 Buku Pedoman</span>
+            </div>
+            <h3 class="text-sm font-semibold text-white tracking-tight">
+              Berapa batas maksimal SKS yang dapat diambil pada semester reguler berdasarkan IPS?
+            </h3>
+          </div>
+          <div class="faq-chevron text-zinc-500 mt-1 shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+        </button>
+        <div class="faq-content px-5 border-t border-white/[0.04]">
+          <div class="py-4 text-xs text-zinc-300 leading-relaxed space-y-2.5">
+            <p>
+              Berdasarkan <strong>Pasal 10 Buku Pedoman Akademik UII</strong>, beban SKS yang dapat diambil mahasiswa pada semester reguler ditentukan berdasarkan Indeks Prestasi Semester (IPS) sebelumnya:
+            </p>
+            <ul class="list-disc pl-5 space-y-1 text-zinc-300">
+              <li><strong>IPS ≥ 3.00</strong>: Beban maksimal hingga <strong>24 SKS</strong>.</li>
+              <li><strong>IPS 2.50 – 2.99</strong>: Beban maksimal hingga <strong>21 SKS</strong>.</li>
+              <li><strong>IPS 2.00 – 2.49</strong>: Beban maksimal hingga <strong>18 SKS</strong>.</li>
+              <li><strong>IPS 1.50 – 1.99</strong>: Beban maksimal hingga <strong>15 SKS</strong>.</li>
+              <li><strong>IPS &lt; 1.50</strong>: Beban maksimal hingga <strong>12 SKS</strong>.</li>
+            </ul>
+            <div class="pt-2 flex items-center justify-between">
+              <span class="text-[10px] mono text-zinc-500">Rujukan: Buku_Pedoman_Akademik_UII.pdf</span>
+              <a href="/chat?q=Berapa%20maksimal%20SKS%20yang%20bisa%20diambil%20jika%20IPS%20saya%203.20%3F" class="inline-flex items-center space-x-1 text-[11px] font-medium text-white hover:underline">
+                <span>Tanyakan di Chat</span>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM 5: 26 SKS Boleh? -->
+      <div class="faq-item luxury-border rounded-xl bg-[#0e1013] overflow-hidden transition" data-category="sks">
+        <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-start justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex items-center space-x-2">
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-medium">Beban SKS & IPS</span>
+              <span class="text-[10px] mono text-zinc-500">Batasan Maksimal</span>
+            </div>
+            <h3 class="text-sm font-semibold text-white tracking-tight">
+              Apakah mahasiswa dengan IPK / IPS 4.00 boleh mengambil 26 SKS dalam satu semester?
+            </h3>
+          </div>
+          <div class="faq-chevron text-zinc-500 mt-1 shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+        </button>
+        <div class="faq-content px-5 border-t border-white/[0.04]">
+          <div class="py-4 text-xs text-zinc-300 leading-relaxed space-y-2.5">
+            <p>
+              <strong>Tidak boleh.</strong> Batas maksimal absolut beban studi mahasiswa program sarjana (S1) di UII dalam satu semester reguler adalah <strong>24 SKS</strong>. 
+            </p>
+            <p class="text-zinc-400">
+              Sistem informasi akademik UII secara otomatis membatasi rencana studi dan tidak memperkenankan penginputan hingga 26 SKS terlepas dari berapa pun tingginya capaian IPS mahasiswa.
+            </p>
+            <div class="pt-2 flex items-center justify-between">
+              <span class="text-[10px] mono text-zinc-500">Rujukan: Buku_Pedoman_Akademik_UII.pdf, Pasal 10</span>
+              <a href="/chat?q=Apakah%20saya%20bisa%20ambil%2026%20SKS%20jika%20IPS%20saya%204.00%3F" class="inline-flex items-center space-x-1 text-[11px] font-medium text-white hover:underline">
+                <span>Tanyakan di Chat</span>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM 6: Masa Berlaku SK -->
+      <div class="faq-item luxury-border rounded-xl bg-[#0e1013] overflow-hidden transition" data-category="dospem">
+        <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-start justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex items-center space-x-2">
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-medium">Masa SK & Dospem</span>
+              <span class="text-[10px] mono text-zinc-500">Pasal 8 Pedoman Skripsi</span>
+            </div>
+            <h3 class="text-sm font-semibold text-white tracking-tight">
+              Berapa lama masa berlaku Surat Keputusan (SK) Dosen Pembimbing Skripsi di FTI UII?
+            </h3>
+          </div>
+          <div class="faq-chevron text-zinc-500 mt-1 shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+        </button>
+        <div class="faq-content px-5 border-t border-white/[0.04]">
+          <div class="py-4 text-xs text-zinc-300 leading-relaxed space-y-2.5">
+            <p>
+              SK Pembimbing Skripsi berlaku selama <strong>1 (satu) semester</strong> terhitung sejak tanggal diterbitkan. Mahasiswa dapat mengajukan perpanjangan maksimal 1 (satu) semester berikutnya dengan melampirkan log kemajuan bimbingan yang telah diverifikasi oleh dosen pembimbing.
+            </p>
+            <p class="text-zinc-400">
+              Jika masa perpanjangan berakhir dan skripsi belum terselesaikan, mahasiswa wajib mengajukan penerbitan SK baru atau penggantian topik/pembimbing melalui persetujuan Ketua Program Studi.
+            </p>
+            <div class="pt-2 flex items-center justify-between">
+              <span class="text-[10px] mono text-zinc-500">Rujukan: Pedoman_Skripsi_FTI_UII_2024.pdf</span>
+              <a href="/chat?q=Berapa%20lama%20masa%20berlaku%20SK%20pembimbing%20skripsi%20FTI%20UII%3F" class="inline-flex items-center space-x-1 text-[11px] font-medium text-white hover:underline">
+                <span>Tanyakan di Chat</span>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM 7: Batas Turnitin -->
+      <div class="faq-item luxury-border rounded-xl bg-[#0e1013] overflow-hidden transition" data-category="turnitin">
+        <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-start justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex items-center space-x-2">
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-medium">Turnitin & Plagiarisme</span>
+              <span class="text-[10px] mono text-zinc-500">Integritas Akademik</span>
+            </div>
+            <h3 class="text-sm font-semibold text-white tracking-tight">
+              Berapa batas maksimal persentase kesamaan (similarity index) Turnitin untuk naskah skripsi?
+            </h3>
+          </div>
+          <div class="faq-chevron text-zinc-500 mt-1 shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+        </button>
+        <div class="faq-content px-5 border-t border-white/[0.04]">
+          <div class="py-4 text-xs text-zinc-300 leading-relaxed space-y-2.5">
+            <p>
+              Batas toleransi maksimal tingkat kesamaan (*similarity index*) hasil uji Turnitin untuk naskah skripsi di FTI UII adalah <strong>maksimal 20%</strong>, dengan opsi <em>Exclude Bibliography</em> dan <em>Exclude Quotes</em> diaktifkan.
+            </p>
+            <p class="text-zinc-400">
+              Naskah yang melebihi batas 20% wajib direvisi dan dilakukan parafrase sebelum mahasiswa diizinkan mendaftar Ujian Pendadaran Skripsi.
+            </p>
+            <div class="pt-2 flex items-center justify-between">
+              <span class="text-[10px] mono text-zinc-500">Rujukan: Pedoman_Skripsi_FTI_UII_2024.pdf</span>
+              <a href="/chat?q=Berapa%20persen%20batas%20maksimal%20Turnitin%20untuk%20skripsi%20FTI%20UII%3F" class="inline-flex items-center space-x-1 text-[11px] font-medium text-white hover:underline">
+                <span>Tanyakan di Chat</span>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM 8: Syarat Yudisium -->
+      <div class="faq-item luxury-border rounded-xl bg-[#0e1013] overflow-hidden transition" data-category="yudisium">
+        <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-start justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex items-center space-x-2">
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-medium">Yudisium & Kelulusan</span>
+              <span class="text-[10px] mono text-zinc-500">Pasal 18 Pedoman</span>
+            </div>
+            <h3 class="text-sm font-semibold text-white tracking-tight">
+              Apa saja syarat kelulusan dan pendaftaran Rapat Yudisium Sarjana di FTI UII?
+            </h3>
+          </div>
+          <div class="faq-chevron text-zinc-500 mt-1 shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+        </button>
+        <div class="faq-content px-5 border-t border-white/[0.04]">
+          <div class="py-4 text-xs text-zinc-300 leading-relaxed space-y-2.5">
+            <p>
+              Merujuk pada <strong>Pasal 18 Buku Pedoman Pelaksanaan Tugas Akhir & Skripsi FTI UII</strong>, syarat yudisium meliputi ketentuan kumulatif:
+            </p>
+            <ol class="list-decimal pl-5 space-y-1 text-zinc-300">
+              <li>Telah lulus seluruh mata kuliah wajib dan pilihan dengan total minimal <strong>144 SKS</strong>.</li>
+              <li>Indeks Prestasi Kumulatif (IPK) sekurang-kurangnya <strong>2.00</strong>.</li>
+              <li>Jumlah perolehan nilai D tidak melebihi <strong>10% dari total SKS</strong> kumulatif.</li>
+              <li><strong>Tidak memiliki nilai E</strong> pada seluruh riwayat mata kuliah.</li>
+              <li>Telah lulus Ujian Skripsi/Pendadaran dan mengunggah naskah final yang disahkan.</li>
+              <li>Memiliki sertifikat kemampuan Bahasa Inggris (CEPT/TOEFL) resmi dari CILACS UII dengan skor <strong>minimal 450</strong> atau setara.</li>
+              <li>Telah lulus Ujian Hafalan Al-Qur'an dan sertifikasi keislaman DPPAI UII.</li>
+            </ol>
+            <div class="pt-2 flex items-center justify-between">
+              <span class="text-[10px] mono text-zinc-500">Rujukan: Pedoman_Skripsi_FTI_UII_2024.pdf</span>
+              <a href="/chat?q=Apa%20saja%20syarat%20yudisium%20sarjana%20di%20FTI%20UII%3F" class="inline-flex items-center space-x-1 text-[11px] font-medium text-white hover:underline">
+                <span>Tanyakan di Chat</span>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM 9: Batas Masa Studi & DO -->
+      <div class="faq-item luxury-border rounded-xl bg-[#0e1013] overflow-hidden transition" data-category="yudisium">
+        <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-start justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex items-center space-x-2">
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-medium">Yudisium & Kelulusan</span>
+              <span class="text-[10px] mono text-zinc-500">Pasal 22 Evaluasi DO</span>
+            </div>
+            <h3 class="text-sm font-semibold text-white tracking-tight">
+              Berapa batas maksimal masa studi S1 di UII dan bagaimana tahapan evaluasi Drop Out (DO)?
+            </h3>
+          </div>
+          <div class="faq-chevron text-zinc-500 mt-1 shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+        </button>
+        <div class="faq-content px-5 border-t border-white/[0.04]">
+          <div class="py-4 text-xs text-zinc-300 leading-relaxed space-y-2.5">
+            <p>
+              Berdasarkan <strong>Pasal 22 Buku Pedoman Akademik UII</strong>, batas maksimal masa studi program sarjana adalah <strong>14 semester (7 tahun)</strong>. Evaluasi berkala dilakukan dalam 2 tahap:
+            </p>
+            <ul class="list-disc pl-5 space-y-1 text-zinc-300">
+              <li><strong>Evaluasi Tahap I (Akhir Semester 4)</strong>: Wajib mengumpulkan minimal <strong>35 SKS lulus</strong> dengan IPK minimal 2.00.</li>
+              <li><strong>Evaluasi Tahap II (Akhir Semester 8)</strong>: Wajib mengumpulkan minimal <strong>80 SKS lulus</strong> dengan IPK minimal 2.00.</li>
+            </ul>
+            <p class="text-zinc-400">
+              Mahasiswa yang tidak memenuhi kriteria evaluasi tahapan tersebut berpotensi mendapatkan peringatan keras hingga pemutusan studi (Drop Out).
+            </p>
+            <div class="pt-2 flex items-center justify-between">
+              <span class="text-[10px] mono text-zinc-500">Rujukan: Buku_Pedoman_Akademik_UII.pdf</span>
+              <a href="/chat?q=Berapa%20batas%20maksimal%20masa%20studi%20S1%20UII%20dan%20syarat%20evaluasi%20semester%204%3F" class="inline-flex items-center space-x-1 text-[11px] font-medium text-white hover:underline">
+                <span>Tanyakan di Chat</span>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM 10: Audit KHS Keamanan -->
+      <div class="faq-item luxury-border rounded-xl bg-[#0e1013] overflow-hidden transition" data-category="audit">
+        <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-start justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="flex items-center space-x-2">
+              <span class="text-[10px] mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-medium">Audit KHS / DPA</span>
+              <span class="text-[10px] mono text-zinc-500">Privasi & Keamanan</span>
+            </div>
+            <h3 class="text-sm font-semibold text-white tracking-tight">
+              Apakah data transkrip nilai KHS atau KRS yang saya unggah ke AURA aman dari kebocoran?
+            </h3>
+          </div>
+          <div class="faq-chevron text-zinc-500 mt-1 shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+        </button>
+        <div class="faq-content px-5 border-t border-white/[0.04]">
+          <div class="py-4 text-xs text-zinc-300 leading-relaxed space-y-2.5">
+            <p>
+              <strong>100% Aman dan Terisolasi.</strong> Berkas KHS atau KRS yang diunggah diproses secara murni <em>in-memory</em> per sesi konsultasi aktif menggunakan mesin parser AURA Core.
+            </p>
+            <p class="text-zinc-400">
+              Dokumen nilai mahasiswa <strong>TIDAK PERNAH</strong> dimasukkan atau diindeks ke dalam basis data vektor publik. Selain itu, basis data percakapan dilindungi oleh sistem <em>Row Level Security (RLS)</em> sehingga mahasiswa lain tidak dapat mengakses sesi atau data nilai Anda.
+            </p>
+            <div class="pt-2 flex items-center justify-between">
+              <span class="text-[10px] mono text-zinc-500">Standar Keamanan AURA Core Sovereign Engine</span>
+              <a href="/chat" class="inline-flex items-center space-x-1 text-[11px] font-medium text-white hover:underline">
+                <span>Coba Unggah KHS di Chat</span>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Empty Search State -->
+    <div id="noResults" class="hidden text-center py-16 luxury-border rounded-xl bg-[#0e1013] mt-4">
+      <div class="w-10 h-10 rounded-full bg-white/[0.06] flex items-center justify-center mx-auto mb-3 text-zinc-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <p class="text-sm font-semibold text-white">Pertanyaan Tidak Ditemukan di FAQ</p>
+      <p class="text-xs text-zinc-400 max-w-sm mx-auto mt-1 mb-4">
+        Kata kunci yang Anda cari belum tercantum di daftar pertanyaan umum ini.
+      </p>
+      <a id="askAuraBtn" href="/chat" class="inline-flex items-center space-x-1.5 px-4 py-2 rounded-lg bg-white text-zinc-950 font-semibold text-xs hover:bg-zinc-200 transition">
+        <span>Tanyakan Langsung ke AURA Core</span>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </a>
+    </div>
+
+    <!-- Bottom Interactive Banner -->
+    <div class="mt-16 luxury-border rounded-2xl bg-gradient-to-b from-[#111317] to-[#0a0b0d] p-8 text-center relative overflow-hidden">
+      <div class="relative z-10 max-w-xl mx-auto space-y-3">
+        <h3 class="text-lg sm:text-xl font-bold text-white tracking-tight">
+          Punya Kasus Khusus atau Ingin Audit KHS?
+        </h3>
+        <p class="text-xs sm:text-sm text-zinc-400 leading-relaxed">
+          Jangan ragu untuk mengunggah kartu hasil studi atau mengajukan pertanyaan regulasi spesifik Anda langsung kepada AURA Core DPA Virtual.
+        </p>
+        <div class="pt-3 flex flex-wrap items-center justify-center gap-3">
+          <a href="/chat" class="px-5 py-2.5 rounded-xl bg-white text-zinc-950 font-semibold text-xs hover:bg-zinc-200 transition shadow-sm flex items-center space-x-2">
+            <span>Buka Konsultasi DPA Virtual</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </a>
+          <a href="/login" class="px-5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-white font-medium text-xs transition">
+            Masuk dengan Akun UII
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/[0.06] bg-[#08090a] py-8 text-xs text-zinc-500">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-2">
+        <span class="font-semibold text-zinc-300">AURA Core</span>
+        <span>&bull;</span>
+        <span>Asisten Regulasi Akademik FTI UII</span>
+      </div>
+      <div class="flex items-center space-x-6">
+        <a href="/" class="hover:text-zinc-300 transition">Beranda</a>
+        <a href="/chat" class="hover:text-zinc-300 transition">DPA Virtual</a>
+        <a href="/faq" class="text-zinc-300 transition">FAQ</a>
+        <a href="/login" class="hover:text-zinc-300 transition">Masuk</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Accordion Toggle Function
+    function toggleFaq(button) {
+      const item = button.closest('.faq-item');
+      const isActive = item.classList.contains('active');
+      
+      // Close all items
+      document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('active'));
+      
+      // Toggle current
+      if (!isActive) {
+        item.classList.add('active');
+      }
+    }
+
+    // Filter by Category
+    function filterCategory(cat) {
+      // Update buttons style
+      document.querySelectorAll('#categoryFilter button').forEach(btn => {
+        if (btn.dataset.cat === cat) {
+          btn.className = "cat-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-white text-zinc-950 transition";
+        } else {
+          btn.className = "cat-pill px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 bg-white/[0.03] border border-white/[0.08] hover:text-white transition";
+        }
+      });
+
+      // Filter items
+      const items = document.querySelectorAll('.faq-item');
+      let visibleCount = 0;
+
+      items.forEach(item => {
+        const itemCat = item.dataset.category;
+        const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+        const text = item.innerText.toLowerCase();
+        const matchesCategory = (cat === 'all' || itemCat === cat);
+        const matchesSearch = (!searchVal || text.includes(searchVal));
+
+        if (matchesCategory && matchesSearch) {
+          item.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+
+      // Show/Hide empty state
+      toggleEmptyState(visibleCount);
+    }
+
+    // Realtime Search
+    function handleSearch() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const activeCatBtn = document.querySelector('#categoryFilter button.bg-white');
+      const activeCat = activeCatBtn ? activeCatBtn.dataset.cat : 'all';
+      
+      const items = document.querySelectorAll('.faq-item');
+      let visibleCount = 0;
+
+      items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        const itemCat = item.dataset.category;
+        const matchesCategory = (activeCat === 'all' || itemCat === activeCat);
+        const matchesSearch = (text.includes(query));
+
+        if (matchesCategory && matchesSearch) {
+          item.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+
+      // Update CTA button link with search query
+      const askBtn = document.getElementById('askAuraBtn');
+      if (query) {
+        askBtn.href = '/chat?q=' + encodeURIComponent(query);
+      } else {
+        askBtn.href = '/chat';
+      }
+
+      toggleEmptyState(visibleCount);
+    }
+
+    function toggleEmptyState(count) {
+      const noResults = document.getElementById('noResults');
+      if (count === 0) {
+        noResults.classList.remove('hidden');
+      } else {
+        noResults.classList.add('hidden');
+      }
+    }
+
+    // Keyboard shortcut (⌘K or Ctrl+K)
+    window.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        const input = document.getElementById('searchInput');
+        input.focus();
+        input.select();
+      }
+    });
+  </script>
+</body>
+</html>
