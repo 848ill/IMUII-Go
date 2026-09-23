@@ -214,5 +214,182 @@ UNIVERSITAS ISLAM INDONESIA (UII)
 4. Status Akreditasi Institusi:
    Universitas Islam Indonesia telah meraih predikat AKREDITASI INSTITUSI UNGGUL dari Badan Akreditasi Nasional Perguruan Tinggi (BAN-PT) berdasarkan Surat Keputusan No. 192/SK/BAN-PT/Ak/PT/III/2022. Mayoritas program studi sarjana di lingkungan FTI UII juga telah terakreditasi Unggul dan beberapa telah meraih akreditasi internasional IABEE.`,
 		},
+		{
+			ID:       "direktori_dosen_informatika_uii",
+			Title:    "Direktori Resmi Staf Pengajar & Profil Dosen Jurusan Informatika FTI UII",
+			FileName: "Direktori_Dosen_Informatika_FTI_UII.pdf",
+			URL:      "https://informatics.uii.ac.id/profil/dosen_if/",
+			Content: `# DIREKTORI RESMI DOSEN & KLASTER RISET JURUSAN INFORMATIKA
+FAKULTAS TEKNOLOGI INDUSTRI - UNIVERSITAS ISLAM INDONESIA (FTI UII)
+
+Sumber Resmi: https://informatics.uii.ac.id/profil/dosen_if/ dan https://informatics.uii.ac.id/dosen-berdasarkan-klaster/
+
+BAB I: PEMBAGIAN KLASTER RISET & KEPASANGAN TOPIK SKRIPSI
+
+1. Klaster Sains Data & Kecerdasan Buatan (Data Science & Artificial Intelligence):
+   Fokus Riset: Natural Language Processing (NLP), Text Mining, Deep Learning, Big Data Analytics, Predictive Modeling, Causal Modeling, Machine Learning Terapan, Data Mining.
+   Rekomendasi Dosen Pembimbing Skripsi:
+   - Dr. Syarif Hidayat, S.Kom., M.I.T. (Bidang: Data Mining, Kecerdasan Buatan, Embedded System)
+   - Ahmad Fathan Hidayatullah, S.T., M.Cs., Ph.D. (Bidang: Natural Language Processing, Sains Data, Text Mining)
+   - Ir. Dhomas Hatta Fudholi, S.T., M.Eng., Ph.D., IPM., ASEAN Eng. (Bidang: Big Data, Deep Learning, NLP, Ontologi, Sains Data)
+   - Dr. Feri Wijayanto, S.T., M.T. (Bidang: Machine Learning, Model Probabilistik, Pemodelan Causal, Psikometrik, Sains Data)
+   - Lizda Iswari, S.T., M.Sc. (Bidang: Data Profiling, Data Clustering, Visualisasi Data)
+   - Septia Rani, S.T., M.Cs. (Bidang: Sains Data, Kecerdasan Buatan, Information Hiding)
+
+2. Klaster Informatika Medis (Medical Informatics):
+   Fokus Riset: Sistem Informasi Kesehatan, Clinical Decision Support System (CDSS), Pemrosesan Citra Medis, Bioinformatika, Rekam Medis Elektronik.
+   Rekomendasi Dosen Pembimbing Skripsi:
+   - Prof. Dr. Sri Kusumadewi, S.Si., M.T. (Guru Besar Sistem Cerdas & Informatika Medis)
+   - Ir. Izzati Muhimmah, S.T., M.Sc., Ph.D. (Bidang: Informatika Medis, Pencitraan Medis, Visi Komputer)
+   - Aridhanyati Arifin, S.T., M.Cs. (Bidang: Informatika Medis, Sistem Pendukung Keputusan)
+   - Elyza Gustri Wahyuni, S.T., M.Cs. (Bidang: Informatika Medis, Sistem Pendukung Keputusan)
+   - Chanifah Indah Ratnasari, S.Kom., M.Kom. (Bidang: Informatika Medis, Ekstraksi Informasi, NLP)
+   - Rahadian Kurniawan, S.Kom., M.Kom. (Bidang: Sistem Informasi Kesehatan, Pemrosesan Citra Medis, Gim Serius Medis)
+
+3. Klaster Rekayasa Perangkat Lunak (Software Engineering):
+   Fokus Riset: Arsitektur Perangkat Lunak, Software Testing & Quality Assurance, Requirement Engineering, DevOps, Microservices, Service Computing, Metodologi Agile/Scrum.
+   Rekomendasi Dosen Pembimbing Skripsi:
+   - Dr. Ir. Raden Teduh Dirgahayu, S.T., M.Sc. (Ketua Jurusan Informatika, Bidang: Rekayasa Perangkat Lunak, Service Computing, Rekayasa Enterprise)
+   - Beni Suranto, S.T., M.SoftEng. (Bidang: Rekayasa Perangkat Lunak, Software Design)
+   - Andhik Budi Cahyono, S.T., M.T. (Bidang: Rekayasa Perangkat Lunak, Web & Mobile Development)
+   - Hari Setiaji, S.Kom., M.Eng. (Bidang: Rekayasa Perangkat Lunak, Sistem Informasi, Teknologi Basis Data)
+   - Dr. Novi Setiani, S.T., M.T. (Bidang: Software Testing, Requirement Engineering, Computer Science Education)
+   - Hanson Prihantoro Putro, S.T., M.T. (Bidang: Software Testing, Arsitektur Enterprise, Pemrograman Kompetitif)
+
+4. Klaster Forensika Digital & Keamanan Siber (Digital Forensics & Cybersecurity - PUSFID):
+   Fokus Riset: Analisis Bukti Digital, Incident Response, Network Security, Malware Analysis, Ethical Hacking, Hukum Siber, Steganografi & Watermarking, Cloud Forensics.
+   Rekomendasi Dosen Pembimbing Skripsi:
+   - Dr. Yudi Prayudi, S.Si., M.Kom. (Kepala Pusat Studi Forensika Digital / PUSFID, Bidang: Bukti Digital, Forensika Digital, Hukum Siber, Steganografi, Watermarking)
+   - Dr. Ahmad Luthfi, S.Kom., M.Kom. (Bidang: Forensika Digital, Jaringan Komputer, Keamanan Jaringan, Open Government Data)
+   - Fietyata Yudha, S.Kom., M.Kom., Ph.D. (Bidang: Ethical Hacking, Forensika Digital, Keamanan Jaringan, Keamanan Siber)
+   - Erika Ramadhani, S.T., M.Eng. (Bidang: Forensika Digital, Keamanan Komputer)
+   - Fayruz Rahma, S.T., M.Eng. (Bidang: Forensika Jaringan, Jaringan Komputer, Keamanan Siber)
+
+5. Klaster Sistem Cerdas, Visi Komputer & Robotika (Intelligent Systems & Computer Vision):
+   Fokus Riset: Computer Vision, Object Detection, Autonomous Systems, Robotika, Reinforcement Learning, Neural Networks, Soft Computing, Algoritma Optimasi.
+   Rekomendasi Dosen Pembimbing Skripsi:
+   - Ir. Chandra Kusuma Dewa, S.Kom., M.Kom., Ph.D. (Bidang: Machine Learning, Multimedia, Reinforcement Learning, Robotika)
+   - Arrie Kurniawardhani, S.Si., M.Kom. (Bidang: Machine Learning, Visi Komputer, Pengenalan Pola)
+   - Rian Adam Rajagede, S.Kom., M.Cs. (Bidang: Jaringan Syaraf Tiruan, Machine Learning, Deep Learning)
+   - Taufiq Hidayat, S.T., M.Sc., Ph.D. (Bidang: Sistem Cerdas, Logika, Soft Computing, Representasi Pengetahuan)
+   - Sri Mulyati, S.Kom., M.Kom. (Bidang: Sistem Cerdas, Informatika Teori)
+   - Zainudin Zukhri, S.T., MIT. (Bidang: Kecerdasan Buatan, Optimasi, Pengenalan Pola)
+
+6. Klaster Sistem Informasi Enterprise & Tata Kelola IT (Enterprise Systems & IT Governance):
+   Fokus Riset: IT Governance (COBIT), Enterprise Architecture (TOGAF), Business Process Management (BPM), ERP, Business Intelligence, Linked Data, Semantic Web, e-Government.
+   Rekomendasi Dosen Pembimbing Skripsi:
+   - Prof. Fathul Wahid, S.T., M.Sc., Ph.D. (Rektor UII, Bidang: e-Government, e-Participation, ICT4D, Sistem Enterprise)
+   - Dr. Hendrik, S.T., M.Eng. (Bidang: Business Intelligence, Linked Data, Semantic Web, Sistem Informasi, Teknologi Pembelajaran)
+   - Kholid Haryono, S.T., M.Kom. (Bidang: IT Governance, Audit dan Kontrol Sistem Informasi, TRIZ / Inventive Problem Solving, Enterprise Information Systems)
+   - Ir. Mukhammad Andri Setiawan, S.T., M.Sc., Ph.D. (Kaprodi S1 Informatika, Bidang: Manajemen Proses Bisnis, Keamanan Informasi, Cloud Infrastructure)
+   - Ari Sujarwo, S.Kom., MIT. (Hons) (Bidang: Sistem Informasi, Kebijakan Publik, Internet of Things)
+   - Moh. Idris, S.Kom., M.Kom. (Bidang: Sistem Informasi, Jaringan Komputer)
+   - Dr. Nur Wijayaning Rahayu, S.Kom., M.Cs. (Bidang: Sistem Informasi, Basis Data, Teknologi Pendidikan)
+
+7. Klaster Game Technology, Interaksi Manusia-Komputer & Multimedia (Game, HCI & Edu-Tech):
+   Fokus Riset: Gamifikasi, Game-based Learning, Augmented Reality/Virtual Reality (AR/VR), UI/UX Design, Human-Computer Interaction, Adaptive E-Learning.
+   Rekomendasi Dosen Pembimbing Skripsi:
+   - Galang Prihadi Mahardhika, S.Kom., M.Kom. (Bidang: Game Based Learning, Gamifikasi, Interaksi Game)
+   - Almed Hamzah, S.T., M.Eng. (Bidang: Interaksi Manusia dan Komputer / HCI, Aplikasi Web Adaptif, M-Learning, UI/UX)
+   - Sheila Nurul Huda, S.Kom., M.Cs. (Bidang: Ilmu Komputer, Multimedia Interaktif)
+
+8. Klaster Jaringan Komputer, Komunikasi Nirkabel & IoT (Computer Networks & IoT):
+   Fokus Riset: Wireless Sensor Networks, Cognitive Radio, Internet of Things (IoT), Network Coding, Routing Protocols, Smart Campus Infrastructure.
+   Rekomendasi Dosen Pembimbing Skripsi:
+   - Ir. Kurniawan Dwi Irianto, S.T., M.Sc. (Bidang: Cognitive Radio Networks, Internet of Things, Komunikasi Nirkabel, Network Coding)
+   - Ir. Irving Vitra Paputungan, S.T., M.Sc., Ph.D. (Bidang: Internet of Things, Algoritma Genetika, Optimisasi, Basis Data)
+
+BAB II: DAFTAR LENGKAP 41 DOSEN JURUSAN INFORMATIKA FTI UII (URUT ABJAD)
+1. Ahmad Fathan Hidayatullah, S.T., M.Cs., Ph.D. | Kepakaran: NLP, Sains Data, Text Mining
+2. Dr. Ahmad Luthfi, S.Kom., M.Kom. | Kepakaran: Forensika Digital, Jaringan Komputer, Open Government Data
+3. Aridhanyati Arifin, S.T., M.Cs. | Kepakaran: Informatika Medis, Sistem Pendukung Keputusan
+4. Andhik Budi Cahyono, S.T., M.T. | Kepakaran: Rekayasa Perangkat Lunak, Web/Mobile Development
+5. Ari Sujarwo, S.Kom., MIT. (Hons) | Kepakaran: IoT, Kebijakan Publik, Sistem Informasi
+6. Arrie Kurniawardhani, S.Si., M.Kom. | Kepakaran: Machine Learning, Computer Vision
+7. Beni Suranto, S.T., M.SoftEng. | Kepakaran: Rekayasa Perangkat Lunak, Software Architecture
+8. Ir. Chandra Kusuma Dewa, S.Kom., M.Kom., Ph.D. | Kepakaran: Machine Learning, Reinforcement Learning, Robotika, Multimedia
+9. Chanifah Indah Ratnasari, S.Kom., M.Kom. | Kepakaran: Ekstraksi Informasi, Informatika Medis, NLP, Sistem Informasi
+10. Ir. Dhomas Hatta Fudholi, S.T., M.Eng., Ph.D., IPM., ASEAN Eng. | Kepakaran: Big Data, Deep Learning, NLP, Ontologi, Sains Data
+11. Elyza Gustri Wahyuni, S.T., M.Cs. | Kepakaran: Informatika Medis, Sistem Pendukung Keputusan
+12. Erika Ramadhani, S.T., M.Eng. | Kepakaran: Forensika Digital, Keamanan Komputer
+13. Dr. Feri Wijayanto, S.T., M.T. | Kepakaran: Machine Learning, Model Probabilistik, Pemodelan Causal, Sains Data
+14. Galang Prihadi Mahardhika, S.Kom., M.Kom. | Kepakaran: Game Based Learning, Gamifikasi
+15. Hari Setiaji, S.Kom., M.Eng. | Kepakaran: Rekayasa Perangkat Lunak, Sistem Informasi, Teknologi Basis Data
+16. Dr. Hendrik, S.T., M.Eng. | Kepakaran: Business Intelligence, Linked Data, Semantic Web, Sistem Informasi
+17. Ir. Izzati Muhimmah, S.T., M.Sc., Ph.D. | Kepakaran: Informatika Medis, Pencitraan Medis, Visi Komputer
+18. Kholid Haryono, S.T., M.Kom. | Kepakaran: Audit & Kontrol, IT Governance, Sistem Informasi Enterprise, TRIZ
+19. Ir. Kurniawan Dwi Irianto, S.T., M.Sc. | Kepakaran: Cognitive Radio Networks, IoT, Komunikasi Nirkabel
+20. Prof. Dr. Sri Kusumadewi, S.Si., M.T. | Kepakaran: Informatika Medis, Sistem Pakar, Fuzzy Logic
+21. Sheila Nurul Huda, S.Kom., M.Cs. | Kepakaran: Ilmu Komputer, Algoritma Pemrograman
+22. Dr. Novi Setiani, S.T., M.T. | Kepakaran: Software Testing, Requirement Engineering, Computer Science Education
+23. Moh. Idris, S.Kom., M.Kom. | Kepakaran: Jaringan Komputer, Sistem Informasi
+24. Dr. Syarif Hidayat, S.Kom., M.I.T. | Kepakaran: Data Mining, Kecerdasan Buatan, Embedded System
+25. Zainudin Zukhri, S.T., MIT. | Kepakaran: Kecerdasan Buatan, Optimasi, Pengenalan Pola
+26. Dr. Yudi Prayudi, S.Si., M.Kom. | Kepakaran: Forensika Digital, Bukti Digital, Hukum Siber, Steganografi
+27. Sri Mulyati, S.Kom., M.Kom. | Kepakaran: Informatika Teori, Sistem Cerdas
+28. Ir. Irving Vitra Paputungan, S.T., M.Sc., Ph.D. | Kepakaran: IoT, Algoritma Genetika, Optimisasi, Basis Data
+29. Hanson Prihantoro Putro, S.T., M.T. | Kepakaran: Arsitektur Enterprise, Pemrograman Kompetitif, Pengujian Perangkat Lunak
+30. Lizda Iswari, S.T., M.Sc. | Kepakaran: Data Profiling, Data Clustering, Visualisasi Data
+31. Fietyata Yudha, S.Kom., M.Kom., Ph.D. | Kepakaran: Ethical Hacking, Forensika Digital, Keamanan Jaringan
+32. Prof. Fathul Wahid, S.T., M.Sc., Ph.D. | Kepakaran: e-Government, e-Participation, ICT4D, Enterprise Systems
+33. Ir. Mukhammad Andri Setiawan, S.T., M.Sc., Ph.D. | Kepakaran: Manajemen Proses Bisnis (BPM), Keamanan Informasi, Cloud
+34. Fayruz Rahma, S.T., M.Eng. | Kepakaran: Forensika Jaringan, Jaringan Komputer, Keamanan Siber
+35. Dr. Nur Wijayaning Rahayu, S.Kom., M.Cs. | Kepakaran: Basis Data, Pendidikan Komputer, Sistem Informasi
+36. Dr. Ir. Raden Teduh Dirgahayu, S.T., M.Sc. | Kepakaran: Rekayasa Enterprise, Rekayasa Perangkat Lunak, Service Computing
+37. Almed Hamzah, S.T., M.Eng. | Kepakaran: Aplikasi Web Adaptif, HCI, M-Learning, UI/UX
+38. Rahadian Kurniawan, S.Kom., M.Kom. | Kepakaran: Gim Serius, Pemrosesan Citra Medis, Sistem Informasi Kesehatan
+39. Rian Adam Rajagede, S.Kom., M.Cs. | Kepakaran: Jaringan Syaraf Tiruan, Machine Learning, Deep Learning
+40. Septia Rani, S.T., M.Cs. | Kepakaran: Information Hiding, Kecerdasan Buatan, Sains Data
+41. Taufiq Hidayat, S.T., M.Sc., Ph.D. | Kepakaran: Akuisisi Pengetahuan, Logika, Machine Learning, Sistem Cerdas, Soft Computing`,
+		},
+		{
+			ID:       "struktur_organisasi_dan_laboratorium_informatika_uii",
+			Title:    "Struktur Organisasi, Pimpinan, dan Laboratorium Jurusan Informatika FTI UII",
+			FileName: "Struktur_Organisasi_Laboratorium_Informatika_UII.pdf",
+			URL:      "https://informatics.uii.ac.id/profil/struktur-organisasi/",
+			Content: `# STRUKTUR ORGANISASI, LABORATORIUM, DAN LAYANAN JURUSAN INFORMATIKA FTI UII
+
+Sumber Resmi: https://informatics.uii.ac.id/profil/struktur-organisasi/ dan https://informatics.uii.ac.id/profil/laboratorium/
+
+BAB I: STRUKTUR PIMPINAN JURUSAN & PROGRAM STUDI INFORMATIKA FTI UII
+1. Pimpinan Jurusan:
+   - Ketua Jurusan Informatika: Dr. Ir. Raden Teduh Dirgahayu, S.T., M.Sc.
+   - Sekretaris Jurusan Informatika: Dr. Hendrik, S.T., M.Eng.
+   - Lokasi Kantor Jurusan: Gedung KH. Mas Mansur Lantai 2, Fakultas Teknologi Industri (FTI), Kampus Terpadu UII, Jl. Kaliurang KM. 14,5 Sleman, Yogyakarta.
+
+2. Program Studi Sarjana (S1):
+   - Ketua Program Studi Sarjana Informatika (S1 Reguler & International Program): Ir. Mukhammad Andri Setiawan, S.T., M.Sc., Ph.D.
+   - Sekretaris Program Studi Sarjana Informatika (S1 Reguler & IP): Chanifah Indah Ratnasari, S.Kom., M.Kom.
+   - Ketua Program Studi Informatika Program Sarjana PJJ (Pendidikan Jarak Jauh): Fietyata Yudha, S.Kom., M.Kom., Ph.D.
+
+3. Program Studi Pascasarjana (S2 & S3):
+   - Ketua Program Studi Magister Informatika (S2): Dr. Ahmad Luthfi, S.Kom., M.Kom.
+   - Sekretaris Program Studi Magister Informatika (S2): Ahmad Fathan Hidayatullah, S.T., M.Cs., Ph.D.
+   - Ketua Program Studi Doktor Informatika (S3): Dr. Novi Setiani, S.T., M.T.
+
+BAB II: LABORATORIUM DAN PUSAT STUDI
+1. Laboratorium Komputer Jurusan Informatika FTI UII:
+   - Laboratorium Basis Data & Rekayasa Perangkat Lunak (Database & Software Engineering Lab)
+   - Laboratorium Sistem Cerdas & Visi Komputer (Intelligent Systems Lab)
+   - Laboratorium Komputasi Terdistribusi, Jaringan, dan IoT (Networking & IoT Lab)
+   - Laboratorium Multimedia & Game Technology
+   - Laboratorium Forensika Digital & Keamanan Komputer (Cybersecurity & Digital Evidence Lab)
+   - Laboratorium Pemrograman Dasar & Algoritma
+
+2. Pusat Studi Riset (Research Centers):
+   - Pusat Studi Forensika Digital (PUSFID UII) - Website: https://forensics.uii.ac.id (Kepala: Dr. Yudi Prayudi, S.Si., M.Kom.)
+   - Pusat Studi Informatika Medis (PSIM UII) (Dipimpin oleh Prof. Dr. Sri Kusumadewi & Ir. Izzati Muhimmah, Ph.D.)
+   - Pusat Studi Sistem Informasi Enterprise (PS-SIE)
+   - Pusat Studi Sains Data (Data Science Center)
+
+BAB III: PANDUAN PENGAJUAN SKRIPSI DAN PEMILIHAN DOSEN PEMBIMBING
+1. Penentuan Topik Skripsi:
+   - Mahasiswa memilih topik skripsi yang sesuai minat dan termasuk dalam salah satu klaster riset di Jurusan Informatika UII.
+   - Mahasiswa dianjurkan membaca publikasi ilmiah terbaru calon dosen pembimbing sebelum mengajukan proposal.
+2. Konsultasi Proposal & Pengajuan SK Pembimbing:
+   - Mahasiswa menyusun draf proposal skripsi (Bab 1-3).
+   - Mengajukan permohonan calon dosen pembimbing ke Program Studi Informatika FTI UII melalui Divisi Administrasi Akademik (DAA).
+   - Setelah SK Dekan FTI terbit, SK Pembimbing berlaku selama 6 (enam) bulan dan dapat diperpanjang maksimal 1 kali (6 bulan berikutnya).`,
+		},
 	}
 }
